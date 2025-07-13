@@ -1,0 +1,99 @@
+package com.manchick.john.path;
+
+import com.manchick.john.exception.JsonException;
+import com.manchick.john.ast.JsonElement;
+import com.manchick.john.path.segment.PathSegment;
+import com.manchick.john.path.segment.PropertySegment;
+import com.manchick.john.path.segment.SubscriptOperator;
+import com.manchick.john.util.ArrayBuilder;
+
+public final class JsonPath {
+
+    private final PathSegment[] segments;
+
+    JsonPath(PathSegment[] segments) {
+        this.segments = segments;
+    }
+
+    public static JsonPath compile(String path) {
+        try {
+            var parser = new PathParser(path);
+            return new JsonPath(parser.parse());
+        } catch (JsonException e) {
+            throw new RuntimeException('\n' + e.getMessage());
+        }
+    }
+
+    public JsonElement traverse(JsonElement root) throws JsonException {
+        for (var segment : this.segments)
+            root = segment.resolve(root);
+        return root;
+    }
+
+    public JsonPath resolve(JsonPath path) {
+        return new JsonPath(ArrayBuilder.<PathSegment>builder()
+                .appendAll(this.segments)
+                .appendAll(path.segments)
+                .build(PathSegment[]::new));
+    }
+
+    public JsonPath normalize() {
+        var builder = ArrayBuilder.<PathSegment>builder();
+        var depth = 0;
+        for (var segment : this.segments) {
+            if (segment != PathSegment.THIS) {
+                if (segment instanceof PropertySegment)
+                    depth++;
+                if (segment instanceof SubscriptOperator(PathSegment operand, int index)) {
+                    if (operand == PathSegment.THIS) {
+                        var last = builder.trimLast();
+                        builder.append(new SubscriptOperator(last, index));
+                        depth++;
+                        continue;
+                    }
+                    if (operand == PathSegment.PARENT) {
+                        var last = builder.trimLast();
+                        if (last instanceof SubscriptOperator(PathSegment lastOp, int __)) {
+                            builder.append(new SubscriptOperator(lastOp, index));
+                            continue;
+                        }
+                        builder.append(new SubscriptOperator(builder.trimLastOr(PathSegment.THIS), index));
+                        continue;
+                    }
+                    depth += 2;
+                }
+                if (segment == PathSegment.PARENT && depth-- > 0) {
+                    var seg = builder.trimLast();
+                    if (seg instanceof SubscriptOperator(PathSegment operand, int __))
+                        builder.append(operand);
+                    continue;
+                }
+                builder.append(segment);
+            }
+        }
+        return new JsonPath(builder.build(PathSegment[]::new));
+    }
+
+    public boolean isEmpty() {
+        return this.length() == 0;
+    }
+
+    public int length() {
+        return this.segments.length;
+    }
+
+    @Override
+    public String toString() {
+        if (this.length() > 0) {
+            var builder = new StringBuilder();
+            for (var i = 0; i < this.segments.length; i++) {
+                var segment = this.segments[i];
+                if (i > 0)
+                    builder.append('/');
+                builder.append(segment);
+            }
+            return builder.toString();
+        }
+        return ".";
+    }
+}
