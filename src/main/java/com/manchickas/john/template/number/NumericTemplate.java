@@ -2,6 +2,7 @@ package com.manchickas.john.template.number;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.position.SourceSpan;
+import com.manchickas.john.template.number.type.RangeTemplate;
 import com.manchickas.john.util.Result;
 import com.manchickas.john.template.Template;
 

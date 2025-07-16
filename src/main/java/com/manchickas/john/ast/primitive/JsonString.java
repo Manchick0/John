@@ -1,6 +1,5 @@
 package com.manchickas.john.ast.primitive;
 
-import com.manchickas.john.util.JsonBuilder;
 import com.manchickas.john.position.SourceSpan;
 
 public final class JsonString extends JsonPrimitive<String> {
@@ -17,8 +16,8 @@ public final class JsonString extends JsonPrimitive<String> {
     }
 
     @Override
-    public void stringify(JsonBuilder builder) {
-        builder.appendString(this.value);
+    public String stringifyPattern() {
+        return '"' + this.value + '"';
     }
 
     @Override

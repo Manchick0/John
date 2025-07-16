@@ -1,7 +1,6 @@
 package com.manchickas.john.ast;
 
 import com.manchickas.john.exception.JsonException;
-import com.manchickas.john.util.JsonBuilder;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,25 +15,19 @@ public final class JsonArray extends JsonElement {
     public JsonArray(SourceSpan span, JsonElement[] elements) {
         super(span);
         this.elements = elements;
-        for (var element : this.elements)
-            element.assignParent(this);
     }
 
     @Override
-    public void stringify(JsonBuilder builder) {
-        builder.append('[')
-                .nest()
-                .appendLine();
-        for (var i = 0; i < this.elements.length; i++) {
-            var el = this.elements[i];
+    public String stringifyPattern() {
+        var builder = new StringBuilder("[\\+n");
+        for (var i = 0; i < this.length(); i++) {
+            var element = this.elements[i];
             if (i > 0)
-                builder.append(',')
-                        .appendLine();
-            builder.appendElement(el);
+                builder.append(",\\s\\n");
+            builder.append(element.stringifyPattern());
         }
-        builder.flatten()
-                .appendLine()
-                .append(']');
+        return builder.append("\\-n]")
+                .toString();
     }
 
     @Override
@@ -49,7 +42,6 @@ public final class JsonArray extends JsonElement {
         throw new JsonException("Attempted to access an element at index '%d' of a JSON array.", index);
     }
 
-    @Override
     public int length() {
         return this.elements.length;
     }

@@ -2,24 +2,24 @@ package com.manchickas.john.template.object.type;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.JsonObject;
+import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.util.Result;
 import com.manchickas.john.template.object.RecordTemplate;
 import com.manchickas.john.template.object.constructor.TriConstructor;
-import com.manchickas.john.template.object.property.PropertyTemplate;
 
 import java.util.List;
 
-public final class TriRecordTemplate<A, B, C, T> extends RecordTemplate<T> {
+public final class TriRecordTemplate<A, B, C, Instance> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<T, A> first;
-    private final PropertyTemplate<T, B> second;
-    private final PropertyTemplate<T, C> third;
-    private final TriConstructor<A, B, C, T> constructor;
+    private final PropertyTemplate<Instance, A> first;
+    private final PropertyTemplate<Instance, B> second;
+    private final PropertyTemplate<Instance, C> third;
+    private final TriConstructor<A, B, C, Instance> constructor;
 
-    public TriRecordTemplate(PropertyTemplate<T, A> first,
-                             PropertyTemplate<T, B> second,
-                             PropertyTemplate<T, C> third,
-                             TriConstructor<A, B, C, T> constructor) {
+    public TriRecordTemplate(PropertyTemplate<Instance, A> first,
+                             PropertyTemplate<Instance, B> second,
+                             PropertyTemplate<Instance, C> third,
+                             TriConstructor<A, B, C, Instance> constructor) {
         this.first = first;
         this.second = second;
         this.third = third;
@@ -27,7 +27,7 @@ public final class TriRecordTemplate<A, B, C, T> extends RecordTemplate<T> {
     }
 
     @Override
-    public Result<T> parse(JsonElement element) {
+    public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
             return this.first.wrapParseMismatch(element).flatMap(first ->
                 this.second.wrapParseMismatch(element).flatMap(second ->
@@ -39,7 +39,7 @@ public final class TriRecordTemplate<A, B, C, T> extends RecordTemplate<T> {
     }
 
     @Override
-    protected List<PropertyTemplate<T, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?>> properties() {
         return List.of(this.first, this.second, this.third);
     }
 }

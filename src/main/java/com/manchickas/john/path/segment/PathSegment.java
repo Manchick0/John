@@ -2,6 +2,7 @@ package com.manchickas.john.path.segment;
 
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
+import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface PathSegment {
@@ -9,7 +10,7 @@ public interface PathSegment {
     PathSegment THIS = new PathSegment() {
 
         @Override
-        public JsonElement resolve(JsonElement root) {
+        public @NotNull JsonElement resolve(JsonElement root) {
             return root;
         }
 
@@ -19,18 +20,6 @@ public interface PathSegment {
         }
     };
 
-    PathSegment PARENT = new PathSegment() {
-
-        @Override
-        public JsonElement resolve(JsonElement root) {
-            return root.parent();
-        }
-
-        @Override
-        public String toString() {
-            return "..";
-        }
-    };
-
+    @NotNull
     JsonElement resolve(JsonElement root) throws JsonException;
 }

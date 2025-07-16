@@ -1,6 +1,5 @@
 package com.manchickas.john.ast;
 
-import com.manchickas.john.util.JsonBuilder;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.path.JsonPath;
 import com.manchickas.john.position.SourceSpan;
@@ -8,20 +7,16 @@ import com.manchickas.john.template.Template;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.WeakReference;
-
 public abstract class JsonElement {
 
     @Nullable
     protected final SourceSpan span;
-    protected WeakReference<JsonElement> parent;
 
     public JsonElement() {
         this(null);
     }
 
     public JsonElement(@Nullable SourceSpan span) {
-        this.parent = new WeakReference<>(null);
         this.span = span;
     }
 
@@ -54,34 +49,45 @@ public abstract class JsonElement {
         return this.get(path).as(template);
     }
 
+    /**
+     * Attempts to retrieve the provided property from the {@link JsonObject}.
+     *
+     * @param name the property to retrieve.
+     * @return the value of the provided property.
+     * @throws JsonException in case the property is not present on the object, or the element doesn't represent an object in the first place.
+     */
     @NotNull
     public JsonElement property(String name) throws JsonException {
         throw new JsonException("Expected an object.")
                 .withSpan(this.span);
     }
 
+    /**
+     * Attempts to retrieve the provided index from the {@link JsonArray}.
+     *
+     * @param index the index to retrive.
+     * @return the value at the provided index.
+     * @throws JsonException in case a negative index is provided, the array contains too few elements, or the element doesn't represent an array in the first place.
+     */
     @NotNull
     public JsonElement subscript(int index) throws JsonException {
         throw new JsonException("Expected an array.")
                 .withSpan(this.span);
     }
 
-    public int length() {
-        return 1;
-    }
-
-    public abstract void stringify(JsonBuilder builder);
-
-    @Nullable
-    public JsonElement parent() {
-        return this.parent.get();
-    }
-
-    public void assignParent(@NotNull JsonElement element) {
-        if (this.parent != null)
-            this.parent.clear();
-        this.parent = new WeakReference<>(element);
-    }
+    /**
+     * Serializes the {@link JsonElement} into a specially formatted string, that,
+     * when processed, can easily be turned into the JSON representation by following a set of simple
+     * sequential substitutions.
+     * <br><br>
+     * Since the string is used internally by the {@link com.manchickas.john.John#stringify(JsonElement, int)} method,
+     * it's referred to as the <b>stringify pattern</b>.
+     * <br><br>
+     *
+     * @return the stringify pattern for the {@link JsonElement}
+     * @see com.manchickas.john.John#stringify(JsonElement, int)
+     */
+    public abstract String stringifyPattern();
 
     @Nullable
     public SourceSpan span() {

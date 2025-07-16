@@ -1,16 +1,15 @@
-package com.manchickas.john.template.number;
+package com.manchickas.john.template.number.type;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonNumber;
+import com.manchickas.john.template.number.NumericTemplate;
 import com.manchickas.john.util.Result;
 
-public final class RangeTemplate implements NumericTemplate {
+public final class MaxTemplate implements NumericTemplate {
 
-    private final double min;
     private final double max;
 
-    public RangeTemplate(Number min, Number max) {
-        this.min = min.doubleValue();
+    public MaxTemplate(Number max) {
         this.max = max.doubleValue();
     }
 
@@ -18,7 +17,7 @@ public final class RangeTemplate implements NumericTemplate {
     public Result<Number> parse(JsonElement element) {
         if (element instanceof JsonNumber number) {
             var value = number.value().doubleValue();
-            if (value >= this.min && value <= this.max)
+            if (value <= this.max)
                 return Result.success(value);
             return Result.mismatch();
         }
@@ -27,14 +26,13 @@ public final class RangeTemplate implements NumericTemplate {
 
     @Override
     public Result<JsonElement> serialize(Number value) {
-        var val = value.doubleValue();
-        if (val >= this.min && val <= this.max)
+        if (value.doubleValue() <= this.max)
             return Result.success(new JsonNumber(value));
         return Result.mismatch();
     }
 
     @Override
     public String name() {
-        return this.min + ".." + this.max;
+        return ".." + this.max;
     }
 }

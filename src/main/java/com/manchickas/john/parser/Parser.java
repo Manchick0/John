@@ -6,8 +6,9 @@ import com.manchickas.john.ast.JsonArray;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.JsonObject;
 import com.manchickas.john.ast.primitive.*;
-import com.manchickas.john.lexer.Lexeme;
+import com.manchickas.john.lexer.lexeme.Lexeme;
 import com.manchickas.john.lexer.Lexer;
+import com.manchickas.john.lexer.lexeme.LexemeType;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.util.ArrayBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
@@ -15,7 +16,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 public final class Parser {
 
     private final Lexer lexer;
-    private final ObjectArrayFIFOQueue<Lexeme> buffer;
+    private final ObjectArrayFIFOQueue<Lexeme<?>> buffer;
 
     public Parser(String source) {
         this.lexer = new Lexer(source);
@@ -25,30 +26,26 @@ public final class Parser {
     public JsonElement parse() throws JsonException {
         var lexeme = this.peek();
         var span = lexeme.span();
-        if (lexeme.isOf(Lexeme.Type.SEPARATOR, '{'))
+        if (lexeme.isOf(LexemeType.SEPARATOR, '{'))
             return this.parseObject(span);
-        if (lexeme.isOf(Lexeme.Type.SEPARATOR, '['))
+        if (lexeme.isOf(LexemeType.SEPARATOR, '['))
             return this.parseArray(span);
-        if (lexeme.isOf(Lexeme.Type.STRING)) {
+        if (lexeme.isOf(LexemeType.STRING)) {
             this.read();
-            return new JsonString(span, lexeme.value());
+            var str = lexeme.expect(LexemeType.STRING);
+            return new JsonString(span, str);
         }
-        if (lexeme.isOf(Lexeme.Type.NUMBER)) {
+        if (lexeme.isOf(LexemeType.NUMBER)) {
             this.read();
-            try {
-                var number = Double.parseDouble(lexeme.value());
-                return new JsonNumber(span, number);
-            } catch (NumberFormatException e) {
-                throw new JsonException("Encountered an invalid number literal '%s'.", lexeme.value())
-                        .withSpan(span);
-            }
+            var number = lexeme.expect(LexemeType.NUMBER);
+            return new JsonNumber(span, number);
         }
-        if (lexeme.isOf(Lexeme.Type.BOOLEAN)) {
+        if (lexeme.isOf(LexemeType.BOOLEAN)) {
             this.read();
-            var bool = lexeme.value();
-            return new JsonBoolean(span, bool.length() == 4);
+            var bool = lexeme.expect(LexemeType.BOOLEAN);
+            return new JsonBoolean(span, bool);
         }
-        if (lexeme.isOf(Lexeme.Type.NULL)) {
+        if (lexeme.isOf(LexemeType.NULL)) {
             this.read();
             return new JsonNull(span);
         }
@@ -57,31 +54,31 @@ public final class Parser {
     }
 
     private JsonObject parseObject(SourceSpan start) throws JsonException {
-        this.expect(Lexeme.Type.SEPARATOR, "{");
-        if (this.peek().isOf(Lexeme.Type.SEPARATOR, "}")) {
+        this.read().expect(LexemeType.SEPARATOR, '{');
+        if (this.peek().isOf(LexemeType.SEPARATOR, '}')) {
             var l = this.read();
             var span = l.span();
             return new JsonObject(start.extend(span), ImmutableMap.of());
         }
         var builder = ImmutableMap.<String, JsonElement>builder();
         while (this.canRead()) {
-            var key = this.expect(Lexeme.Type.STRING);
-            this.expect(Lexeme.Type.SEPARATOR, ":");
+            var key = this.read().expect(LexemeType.STRING);
+            this.read().expect(LexemeType.SEPARATOR, ':');
             var value = this.parse();
             builder.put(key, value);
-            if (this.peek().isOf(Lexeme.Type.SEPARATOR, "}")) {
+            if (this.peek().isOf(LexemeType.SEPARATOR, '}')) {
                 var l = this.read();
                 var span = l.span();
                 return new JsonObject(start.extend(span), builder.build());
             }
-            this.expect(Lexeme.Type.SEPARATOR, ",");
+            this.read().expect(LexemeType.SEPARATOR, ',');
         }
         throw new JsonException("Encountered an unterminated object literal.");
     }
 
     private JsonArray parseArray(SourceSpan start) throws JsonException {
-        this.expect(Lexeme.Type.SEPARATOR, "[");
-        if (this.peek().isOf(Lexeme.Type.SEPARATOR, "]")) {
+        this.read().expect(LexemeType.SEPARATOR, '[');
+        if (this.peek().isOf(LexemeType.SEPARATOR, ']')) {
             var l = this.read();
             var span = l.span();
             return new JsonArray(start.extend(span), new JsonElement[0]);
@@ -90,36 +87,17 @@ public final class Parser {
         while (this.canRead()) {
             var value = this.parse();
             builder.append(value);
-            if (this.peek().isOf(Lexeme.Type.SEPARATOR, "]")) {
+            if (this.peek().isOf(LexemeType.SEPARATOR, ']')) {
                 var l = this.read();
                 var span = l.span();
                 return new JsonArray(start.extend(span), builder.build(JsonElement[]::new));
             }
-            this.expect(Lexeme.Type.SEPARATOR, ",");
+            this.read().expect(LexemeType.SEPARATOR, ',');
         }
         throw new JsonException("Encountered an unterminated array literal.");
     }
 
-    private String expect(Lexeme.Type type) throws JsonException {
-        var lexeme = this.peek();
-        if (lexeme.isOf(type))
-            return this.read()
-                    .value();
-        throw new JsonException("Expected a lexeme of type '%s'", type)
-                .withSpan(lexeme.span());
-    }
-
-    private void expect(Lexeme.Type type, String value) throws JsonException {
-        var lexeme = this.peek();
-        if (lexeme.isOf(type, value)) {
-            this.read();
-            return;
-        }
-        throw new JsonException("Expected a lexeme of type '%s' with value '%s'", type, value)
-                .withSpan(lexeme.span());
-    }
-
-    private Lexeme peek() throws JsonException {
+    private Lexeme<?> peek() throws JsonException {
         if (this.buffer.isEmpty()) {
             var lexeme = this.lexer.nextLexeme();
             this.buffer.enqueue(lexeme);
@@ -128,7 +106,9 @@ public final class Parser {
         return this.buffer.last();
     }
 
-    private Lexeme read() {
+    private Lexeme<?> read() throws JsonException {
+        if (this.buffer.isEmpty())
+            return this.lexer.nextLexeme();
         return this.buffer.dequeueLast();
     }
 

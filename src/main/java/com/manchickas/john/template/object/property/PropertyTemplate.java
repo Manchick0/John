@@ -2,51 +2,63 @@ package com.manchickas.john.template.object.property;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.JsonObject;
+import com.manchickas.john.ast.primitive.JsonNull;
 import com.manchickas.john.exception.JsonException;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.Template;
+import com.manchickas.john.util.Result;
 
-public final class PropertyTemplate<T, V> implements Template<V> {
+public abstract class PropertyTemplate<Instance, T> implements Template<T> {
 
-    public final String name;
-    private final Template<V> template;
-    private final PropertyAccessor<T, V> accessor;
+    protected final String property;
+    protected final Template<T> template;
+    protected final PropertyAccessor<Instance, T> accessor;
 
-    public PropertyTemplate(String name, Template<V> template, PropertyAccessor<T, V> accessor) {
-        this.name = name;
+    public PropertyTemplate(String property,
+                            Template<T> template,
+                            PropertyAccessor<Instance, T> accessor) {
+        this.property = property;
         this.template = template;
         this.accessor = accessor;
     }
 
+    public abstract Result<T> missingResult(SourceSpan span);
+
+    public Result<JsonElement> serializeProperty(Instance instance) {
+        var value = this.access(instance);
+        if (value != null)
+            return this.serialize(value);
+        return Result.success(new JsonNull());
+    };
+
     @Override
-    public Result<V> parse(JsonElement element) {
+    public Result<T> parse(JsonElement element) {
         if (element instanceof JsonObject object) {
             try {
-                var value = object.property(this.name);
-                return this.template.wrapParseMismatch(value);
+                var prop = object.property(this.property);
+                return this.template.wrapParseMismatch(prop);
             } catch (JsonException e) {
-                return Result.error("Expected the object to include '%s' as a property"
-                        .formatted(this.name), element.span());
+                return this.missingResult(element.span());
             }
         }
         return Result.mismatch();
     }
 
     @Override
-    public Result<JsonElement> serialize(V value) {
+    public Result<JsonElement> serialize(T value) {
         return this.template.wrapSerializeMismatch(value);
-    }
-
-    public Result<JsonElement> serializeProperty(T instance) {
-        return this.serialize(this.access(instance));
-    }
-
-    public V access(T instance) {
-        return this.accessor.access(instance);
     }
 
     @Override
     public String name() {
-        return this.name + ": " + this.template.name();
+        return this.property + ": " + this.template.name();
+    }
+
+    public T access(Instance instance) {
+        return this.accessor.access(instance);
+    }
+
+    public String property() {
+        return this.property;
     }
 }

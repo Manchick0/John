@@ -1,6 +1,5 @@
 package com.manchickas.john.ast.primitive;
 
-import com.manchickas.john.util.JsonBuilder;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +17,8 @@ public final class JsonBoolean extends JsonPrimitive<Boolean> {
     }
 
     @Override
-    public void stringify(JsonBuilder builder) {
-        builder.append(this.value);
+    public String stringifyPattern() {
+        return this.value ? "true" : "false";
     }
 
     @Override

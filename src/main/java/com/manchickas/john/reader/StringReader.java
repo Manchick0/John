@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 
-public abstract class StringReader {
+public class StringReader {
 
     private final String src;
     private final ObjectArrayFIFOQueue<Position> stamps;
@@ -24,6 +24,10 @@ public abstract class StringReader {
         this.cursor = 0;
         this.column = 1;
         this.line = 1;
+    }
+
+    public static boolean isSign(int c) {
+        return c == '+' || c == '-';
     }
 
     public static boolean isDigit(int c) {

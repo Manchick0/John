@@ -1,6 +1,8 @@
 package com.manchickas.john.lexer;
 
 import com.manchickas.john.exception.JsonException;
+import com.manchickas.john.lexer.lexeme.Lexeme;
+import com.manchickas.john.lexer.lexeme.LexemeType;
 import com.manchickas.john.reader.StringReader;
 import org.jspecify.annotations.Nullable;
 
@@ -18,7 +20,7 @@ public final class Lexer extends StringReader {
     }
 
     @Nullable
-    public Lexeme nextLexeme() throws JsonException {
+    public Lexeme<?> nextLexeme() throws JsonException {
         if (this.canRead()) {
             var c = this.peek();
             if (INDENTATION.contains(c)) {
@@ -27,18 +29,19 @@ public final class Lexer extends StringReader {
             }
             if (SEPARATORS.contains(c)) {
                 this.read();
-                return new Lexeme(Lexeme.Type.SEPARATOR, String.valueOf((char) c), this.relativeSpan(1, 0));
+                return new Lexeme<>(LexemeType.SEPARATOR, (char) c,
+                        this.relativeSpan(1, 0));
             }
             if (c == '"')
                 return this.readString();
-            if (StringReader.isDigit(c) || (this.isSign(c) && StringReader.isDigit(this.peekAhead(1))))
+            if (StringReader.isDigit(c) || (StringReader.isSign(c) && StringReader.isDigit(this.peekAhead(1))))
                 return this.readNumber();
             return this.readGenericLexeme();
         }
         return null;
     }
 
-    private Lexeme readGenericLexeme() throws JsonException {
+    private Lexeme<?> readGenericLexeme() throws JsonException {
         this.pushStamp();
         while (this.canRead()) {
             var d = this.peek();
@@ -49,18 +52,19 @@ public final class Lexer extends StringReader {
         var span = this.span(this.peekStamp());
         var lexeme = this.slice();
         if (lexeme.equals("null"))
-            return new Lexeme(Lexeme.Type.NULL, lexeme, span);
+            return new Lexeme<>(LexemeType.NULL, null, span);
         if (BOOLEANS.contains(lexeme))
-            return new Lexeme(Lexeme.Type.BOOLEAN, lexeme, span);
+            return new Lexeme<>(LexemeType.BOOLEAN,
+                    lexeme.length() == 4, span);
         throw new JsonException("Unexpected lexeme '%s'.", lexeme)
                 .withSpan(span);
     }
 
-    private Lexeme readNumber() throws JsonException {
+    private Lexeme<Number> readNumber() throws JsonException {
         var readingDecimal = false;
         var readingExponent = false;
         this.pushStamp();
-        if (this.isSign(this.peek()))
+        if (StringReader.isSign(this.peek()))
             this.read();
         while (this.canRead()) {
             var c = this.peek();
@@ -77,7 +81,7 @@ public final class Lexer extends StringReader {
                 if (!readingExponent) {
                     readingExponent = true;
                     this.read();
-                    if (this.isSign(this.peek()))
+                    if (StringReader.isSign(this.peek()))
                         this.read();
                     continue;
                 }
@@ -92,10 +96,16 @@ public final class Lexer extends StringReader {
         }
         var span = this.span(this.peekStamp());
         var lexeme = this.slice();
-        return new Lexeme(Lexeme.Type.NUMBER, lexeme, span);
+        try {
+            var number = Double.parseDouble(lexeme);
+            return new Lexeme<>(LexemeType.NUMBER, number, span);
+        } catch (NumberFormatException e) {
+            throw new JsonException("Encountered an invalid number literal '%s'.", lexeme)
+                    .withSpan(span);
+        }
     }
 
-    private Lexeme readString() throws JsonException {
+    private Lexeme<String> readString() throws JsonException {
         this.pushStamp();
         this.read(); // Consume the quote
         var builder = new StringBuilder();
@@ -120,7 +130,7 @@ public final class Lexer extends StringReader {
             if (c == '"') {
                 this.read();
                 var lexeme = builder.toString();
-                return new Lexeme(Lexeme.Type.STRING, lexeme, this.span());
+                return new Lexeme<>(LexemeType.STRING, lexeme, this.span());
             }
             builder.appendCodePoint(c);
             this.read();
@@ -145,9 +155,5 @@ public final class Lexer extends StringReader {
             throw new JsonException("Encountered an unterminated string literal.");
         }
         return (char) result;
-    }
-
-    private boolean isSign(int c) {
-        return c == '+' || c == '-';
     }
 }

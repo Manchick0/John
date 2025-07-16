@@ -27,10 +27,6 @@ public final class PathParser extends StringReader {
         if (this.canRead()) {
             if (this.peek() == '.') {
                 this.read();
-                if (this.peek() == '.') {
-                    this.read();
-                    return this.processTrailing(PathSegment.PARENT);
-                }
                 return this.processTrailing(PathSegment.THIS);
             }
             return this.readPropertySegment();

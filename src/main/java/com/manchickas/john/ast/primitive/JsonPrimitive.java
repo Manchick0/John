@@ -6,10 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class JsonPrimitive<T> extends JsonElement {
 
-    public JsonPrimitive() {
-        this(null);
-    }
-
     public JsonPrimitive(@Nullable SourceSpan span) {
         super(span);
     }

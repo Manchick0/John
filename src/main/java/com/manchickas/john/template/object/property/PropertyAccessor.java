@@ -1,7 +1,7 @@
 package com.manchickas.john.template.object.property;
 
 @FunctionalInterface
-public interface PropertyAccessor<T, A> {
+public interface PropertyAccessor<Instance, Property> {
 
-    A access(T instance);
+    Property access(Instance instance);
 }

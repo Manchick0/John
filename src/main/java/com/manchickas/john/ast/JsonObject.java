@@ -3,7 +3,6 @@ package com.manchickas.john.ast;
 import com.google.common.collect.ImmutableMap;
 import com.manchickas.john.John;
 import com.manchickas.john.exception.JsonException;
-import com.manchickas.john.util.JsonBuilder;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,8 +17,25 @@ public final class JsonObject extends JsonElement {
     public JsonObject(SourceSpan span, ImmutableMap<String, JsonElement> elements) {
         super(span);
         this.elements = elements;
-        this.elements.forEach((key, value) ->
-                value.assignParent(this));
+    }
+
+    @Override
+    public String stringifyPattern() {
+        var builder = new StringBuilder("{\\+n");
+        var i = 0;
+        for (var entry : this.elements.entrySet()) {
+            if (i++ > 0)
+                builder.append(",\\s\\n");
+            var key = entry.getKey();
+            var value = entry.getValue();
+            builder.append('"')
+                    .append(key)
+                    .append('"')
+                    .append(":\\s")
+                    .append(value.stringifyPattern());
+        }
+        return builder.append("\\-n}")
+                .toString();
     }
 
     @Override
@@ -36,35 +52,6 @@ public final class JsonObject extends JsonElement {
                 .put(name, value)
                 .putAll(this.elements)
                 .buildKeepingLast());
-    }
-
-    @Override
-    public void stringify(JsonBuilder builder) {
-        builder.append('{')
-                .nest()
-                .appendLine();
-        var i = 0;
-        for (var entry : this.elements.entrySet()) {
-            var key = entry.getKey();
-            var element = entry.getValue();
-            if (i > 0) {
-                builder.append(',')
-                        .appendLine();
-            }
-            builder.appendString(key)
-                    .append(':')
-                    .append(' ')
-                    .appendElement(element);
-            i++;
-        }
-        builder.flatten()
-                .appendLine()
-                .append('}');
-    }
-
-    @Override
-    public int length() {
-        return this.elements.size();
     }
 
     @Override

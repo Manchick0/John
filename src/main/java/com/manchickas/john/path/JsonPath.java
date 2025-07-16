@@ -39,37 +39,17 @@ public final class JsonPath {
 
     public JsonPath normalize() {
         var builder = ArrayBuilder.<PathSegment>builder();
-        var depth = 0;
         for (var segment : this.segments) {
-            if (segment != PathSegment.THIS) {
-                if (segment instanceof PropertySegment)
-                    depth++;
-                if (segment instanceof SubscriptOperator(PathSegment operand, int index)) {
-                    if (operand == PathSegment.THIS) {
-                        var last = builder.trimLast();
-                        builder.append(new SubscriptOperator(last, index));
-                        depth++;
-                        continue;
-                    }
-                    if (operand == PathSegment.PARENT) {
-                        var last = builder.trimLast();
-                        if (last instanceof SubscriptOperator(PathSegment lastOp, int __)) {
-                            builder.append(new SubscriptOperator(lastOp, index));
-                            continue;
-                        }
-                        builder.append(new SubscriptOperator(builder.trimLastOr(PathSegment.THIS), index));
-                        continue;
-                    }
-                    depth += 2;
-                }
-                if (segment == PathSegment.PARENT && depth-- > 0) {
-                    var seg = builder.trimLast();
-                    if (seg instanceof SubscriptOperator(PathSegment operand, int __))
-                        builder.append(operand);
+            if (segment == PathSegment.THIS)
+                continue;
+            if (segment instanceof SubscriptOperator(PathSegment operand, int index)) {
+                if (operand == PathSegment.THIS) {
+                    var last = builder.trimLast();
+                    builder.append(new SubscriptOperator(last, index));
                     continue;
                 }
-                builder.append(segment);
             }
+            builder.append(segment);
         }
         return new JsonPath(builder.build(PathSegment[]::new));
     }

@@ -2,6 +2,7 @@ package com.manchickas.john.path.segment;
 
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
+import org.jetbrains.annotations.NotNull;
 
 public final class PropertySegment implements PathSegment {
 
@@ -12,7 +13,7 @@ public final class PropertySegment implements PathSegment {
     }
 
     @Override
-    public JsonElement resolve(JsonElement root) throws JsonException {
+    public @NotNull JsonElement resolve(JsonElement root) throws JsonException {
         return root.property(this.name);
     }
 

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public record SubscriptOperator(PathSegment operand, int index) implements PathSegment {
 
     @Override
-    public JsonElement resolve(JsonElement root) throws JsonException {
+    public @NotNull JsonElement resolve(JsonElement root) throws JsonException {
         return this.operand.resolve(root)
                 .subscript(this.index);
     }
