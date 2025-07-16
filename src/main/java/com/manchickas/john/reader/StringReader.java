@@ -51,13 +51,13 @@ public class StringReader {
         return this.src.codePointAt(cursor);
     }
 
-    public char read(int amount) {
+    public int read(int amount) {
         while (--amount > 0)
             this.read();
         return this.read();
     }
 
-    public char read() {
+    public int read() {
         var c = this.peek();
         this.cursor += Character.charCount(c);
         if (c == '\n') {
@@ -67,7 +67,7 @@ public class StringReader {
             return '\n';
         }
         this.column += 1;
-        return (char) c;
+        return c;
     }
 
     public boolean canRead() {

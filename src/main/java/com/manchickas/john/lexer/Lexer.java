@@ -113,19 +113,17 @@ public final class Lexer extends StringReader {
             var c = this.peek();
             if (c == '\\') {
                 this.read();
-                var escape = this.peek();
+                var escape = this.read();
                 if (escape == 'u') {
-                    this.read();
                     builder.append(this.readHexCharacter());
                     continue;
                 }
                 if (ESCAPABLE.contains(escape)) {
                     builder.appendCodePoint(escape);
-                    this.read();
                     continue;
                 }
                 throw new JsonException("Encountered an unknown escape sequence '\\%c'.", escape)
-                        .withSpan(this.relativeSpan(1, 0));
+                        .withSpan(this.relativeSpan(2, 0));
             }
             if (c == '"') {
                 this.read();
