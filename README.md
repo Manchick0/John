@@ -23,7 +23,7 @@ A single template has three key responsibilities:
 2. It defines how to **serialize** a correctly typed value back into JSON.
 3. It performs any additional validation while doing both of the above-mentioned operations.
 
-> [NOTE]
+> [!NOTE]
 > You _almost never_ need to define your **own** templates. The standard library provides a handful of methods to compose
 > them, which, when used correctly, almost completely eliminate the purpose in defining your own templates from scratch.
 
