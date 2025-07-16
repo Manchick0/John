@@ -23,8 +23,9 @@ A single template has three key responsibilities:
 2. It defines how to **serialize** a correctly typed value back into JSON.
 3. It performs any additional validation while doing both of the above-mentioned operations.
 
-That being said, you _almost never_ need to define your **own** templates. The standard library provides a handful of methods to compose
-templates, which, when used correctly, almost completely eliminate the purpose in defining your own templates from scratch.
+> [NOTE]
+> You _almost never_ need to define your **own** templates. The standard library provides a handful of methods to compose
+> them, which, when used correctly, almost completely eliminate the purpose in defining your own templates from scratch.
 
 Templates are **stateless**. They define how to process the value, not the value to process. This pattern allows you to **re-use** existing templates
 as much as you'd want to. Most templates should therefore be defined as `public static final` constants, rather than inlined into whatever method expects one.
