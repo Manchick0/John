@@ -22,7 +22,9 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
         this.accessor = accessor;
     }
 
-    public abstract Result<T> missingResult(SourceSpan span);
+    @Override
+    public abstract PropertyTemplate<Instance, T> orElse(T other);
+    protected abstract Result<T> missingResult(SourceSpan span);
 
     public Result<JsonElement> serializeProperty(Instance instance) {
         var value = this.access(instance);

@@ -23,7 +23,7 @@ public final class John {
     }
 
     public static <T> T parse(String source, Template<T> template) throws JsonException {
-        return John.parse(source).as(template);
+        return John.parse(source).expect(template);
     }
 
     public static JsonElement parse(Path path) throws JsonException, IOException {
@@ -38,7 +38,7 @@ public final class John {
     }
 
     public static <T> T parse(Path path, Template<T> template) throws JsonException, IOException {
-        return John.parse(path).as(template);
+        return John.parse(path).expect(template);
     }
 
     public static <T> JsonElement serialize(T element, Template<T> template) throws JsonException {

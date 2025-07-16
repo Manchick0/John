@@ -1,6 +1,7 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.template.union.UnionTemplate;
 import com.manchickas.john.ast.primitive.JsonBoolean;
 import com.manchickas.john.ast.primitive.JsonNull;
 import com.manchickas.john.ast.primitive.JsonNumber;
@@ -18,7 +19,6 @@ import com.manchickas.john.template.object.constructor.TriConstructor;
 import com.manchickas.john.template.object.constructor.UniConstructor;
 import com.manchickas.john.template.object.property.PropertyAccessor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
-import com.manchickas.john.template.object.property.type.OptionalPropertyTemplate;
 import com.manchickas.john.template.object.property.type.RequiredPropertyTemplate;
 import com.manchickas.john.template.object.type.BiRecordTemplate;
 import com.manchickas.john.template.object.type.TetraRecordTemplate;
@@ -371,10 +371,6 @@ public interface Template<T> {
         return new RequiredPropertyTemplate<>(name, this, accessor);
     }
 
-    default <Instance> PropertyTemplate<Instance, T> property(String name, PropertyAccessor<Instance, T> accessor, T defaultValue) {
-        return new OptionalPropertyTemplate<>(name, this, accessor, defaultValue);
-    }
-
     default <V> Template<V> map(Function<T, V> mapper,
                                 Function<V, T> remapper) {
         return new Template<>() {
@@ -449,6 +445,32 @@ public interface Template<T> {
             @Override
             public String name() {
                 return Template.this.name();
+            }
+        };
+    }
+
+    default Template<T> orElse(T other) {
+        return new Template<>() {
+
+            @Override
+            public Result<T> parse(JsonElement element) {
+                var result = Template.this.parse(element);
+                if (result.isSuccess())
+                    return result;
+                return Result.success(other);
+            }
+
+            @Override
+            public Result<JsonElement> serialize(T value) {
+                var result = Template.this.serialize(value);
+                if (result.isSuccess())
+                    return result;
+                return Template.this.serialize(other);
+            }
+
+            @Override
+            public String name() {
+                return Template.this.name() + '?';
             }
         };
     }

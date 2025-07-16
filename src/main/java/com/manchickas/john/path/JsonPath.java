@@ -3,7 +3,6 @@ package com.manchickas.john.path;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.path.segment.PathSegment;
-import com.manchickas.john.path.segment.PropertySegment;
 import com.manchickas.john.path.segment.SubscriptOperator;
 import com.manchickas.john.util.ArrayBuilder;
 

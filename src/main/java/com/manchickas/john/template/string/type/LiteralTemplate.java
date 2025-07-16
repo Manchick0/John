@@ -37,7 +37,7 @@ public final class LiteralTemplate implements StringTemplate {
         return Result.mismatch();
     }
 
-    public boolean matches(String value) {
+    private boolean matches(String value) {
         if (this.caseSensitive)
             return value.equals(this.literal);
         return value.equalsIgnoreCase(this.literal);

@@ -1,5 +1,6 @@
 package com.manchickas.john.ast;
 
+import com.manchickas.john.John;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.path.JsonPath;
 import com.manchickas.john.position.SourceSpan;
@@ -21,7 +22,7 @@ public abstract class JsonElement {
     }
 
     @NotNull
-    public <T> T as(Template<T> template) throws JsonException {
+    public <T> T expect(Template<T> template) throws JsonException {
         var result = template.wrapParseMismatch(this);
         if (result.isSuccess())
             return result.unwrap();
@@ -46,7 +47,7 @@ public abstract class JsonElement {
 
     @NotNull
     public <T> T get(JsonPath path, Template<T> template) throws JsonException {
-        return this.get(path).as(template);
+        return this.get(path).expect(template);
     }
 
     /**
@@ -80,12 +81,12 @@ public abstract class JsonElement {
      * when processed, can easily be turned into the JSON representation by following a set of simple
      * sequential substitutions.
      * <br><br>
-     * Since the string is used internally by the {@link com.manchickas.john.John#stringify(JsonElement, int)} method,
-     * it's referred to as the <b>stringify pattern</b>.
+     * The pattern is used internally by the {@link John#stringify(JsonElement, int)} method,
+     * and it's thus referred to as the <b>stringify pattern</b>.
      * <br><br>
      *
      * @return the stringify pattern for the {@link JsonElement}
-     * @see com.manchickas.john.John#stringify(JsonElement, int)
+     * @see John#stringify(JsonElement, int)
      */
     public abstract String stringifyPattern();
 

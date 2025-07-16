@@ -1,8 +1,9 @@
-package com.manchickas.john.template;
+package com.manchickas.john.template.union;
 
 import com.google.common.collect.ImmutableSet;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Template;
 
 import java.util.Set;
 

@@ -4,7 +4,6 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 public record Lexeme<T>(LexemeType<T> type, T value,
                         SourceSpan span) {
