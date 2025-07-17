@@ -36,13 +36,13 @@ public final class UnionTemplate<T> implements Template<T> {
     }
 
     @Override
-    public String name() {
+    public String name(boolean potentialRecursion) {
         var builder = new StringBuilder();
         var i = 0;
         for (var template : this.templates) {
             if (i++ > 0)
                 builder.append(" | ");
-            builder.append(template.name());
+            builder.append(template.name(potentialRecursion));
         }
         return builder.toString();
     }

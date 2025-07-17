@@ -55,7 +55,7 @@ public interface Template<T> {
      *
      * @since 1.0.0
      */
-    Template<Void> NULL = new Template<>() {
+    NullTemplate NULL = new NullTemplate() {
 
         @Override
         public Result<Void> parse(JsonElement element) {
@@ -70,7 +70,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(boolean potentialRecursion) {
             return "null";
         }
     };
@@ -93,7 +93,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(boolean potentialRecursion) {
             return "any";
         }
     };
@@ -123,7 +123,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(boolean potentialRecursion) {
             return "string";
         }
     };
@@ -148,7 +148,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(boolean potentialRecursion) {
             return "number";
         }
     };
@@ -174,7 +174,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(boolean potentialRecursion) {
             return "boolean";
         }
     };
@@ -193,20 +193,6 @@ public interface Template<T> {
     @SafeVarargs
     static <T> Template<T> union(Template<T>... templates) {
         return new UnionTemplate<>(templates);
-    }
-
-    /**
-     * Represents a {@link Template} that resolves to an array, the element type of which corresponds to that of the provided template.
-     * <br><br>
-     * In order for the template to match, <b>each</b> element must satisfy the provided element template.
-     *
-     * @param template the template to apply to each element.
-     * @param factory the factory to create the resulting array with.
-     * @return a {@link Template} representing an array equivalent of the provided template.
-     * @param <T> the type of the element.
-     */
-    static <T> Template<T[]> array(Template<T> template, IntFunction<T[]> factory) {
-        return new ArrayTemplate<>(template, factory);
     }
 
     /**
@@ -312,6 +298,21 @@ public interface Template<T> {
     }
 
     /**
+     * Represents a {@link Template} that behaves identically to the one returned by the provided {@code supplier}, but
+     * defers the initialization to its first usage.
+     * <br><br>
+     * The underlying template gets initialized when either {@link #parse(JsonElement)} or {@link #serialize(Object)}
+     * gets invoked, memoizing the returned template afterward.
+     *
+     * @param supplier the supplier of the underlying {@link Template}.
+     * @return a {@link Template} that defers its initialization to the first usage.
+     * @param <T> the type of the template.
+     */
+    static <T> Template<T> lazy(Supplier<Template<T>> supplier) {
+        return new LazyTemplate<>(supplier);
+    }
+
+    /**
      * Represents a {@link Template} that <b>never</b> matches.
      * <br><br>
      * The {@code never} template may be used in places where a template is mandatory, yet it should never get
@@ -335,7 +336,7 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
+            public String name(boolean potentialRecursion) {
                 return "never";
             }
         };
@@ -365,7 +366,23 @@ public interface Template<T> {
      */
     Result<T> parse(JsonElement element);
     Result<JsonElement> serialize(T value);
-    String name();
+    String name(boolean potentialRecursion);
+
+    default String name() {
+        return this.name(false);
+    }
+
+    /**
+     * Composes a {@link Template} that resolves to an array, the element type of which corresponds to that of the current template.
+     * <br><br>
+     * In order for the template to match, <b>each</b> element must satisfy the current template.
+     *
+     * @param factory the factory needed to create the resulting array with.
+     * @return a {@link Template} representing an array equivalent of the template.
+     */
+    default Template<T[]> array(IntFunction<T[]> factory) {
+        return new ArrayTemplate<>(this, factory);
+    }
 
     default <Instance> PropertyTemplate<Instance, T> property(String name, PropertyAccessor<Instance, T> accessor) {
         return new RequiredPropertyTemplate<>(name, this, accessor);
@@ -387,8 +404,8 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name();
+            public String name(boolean potentialRecursion) {
+                return Template.this.name(potentialRecursion);
             }
         };
     }
@@ -409,8 +426,8 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name();
+            public String name(boolean potentialRecursion) {
+                return Template.this.name(potentialRecursion);
             }
         };
     }
@@ -443,8 +460,8 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name();
+            public String name(boolean potentialRecursion) {
+                return Template.this.name(potentialRecursion);
             }
         };
     }
@@ -469,8 +486,8 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name() + '?';
+            public String name(boolean potentialRecursion) {
+                return Template.this.name(potentialRecursion) + '?';
             }
         };
     }

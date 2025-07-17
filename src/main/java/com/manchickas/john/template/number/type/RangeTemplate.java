@@ -35,7 +35,7 @@ public final class RangeTemplate implements NumericTemplate {
     }
 
     @Override
-    public String name() {
+    public String name(boolean potentialRecursion) {
         return this.min + ".." + this.max;
     }
 }

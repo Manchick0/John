@@ -32,7 +32,7 @@ Instead of being lenient and unsafe, John uses a single, **checked exception** â
 Since in most cases JSON is parsed from an _arbitrary string_, you should **not** assume the parsing will succeed most of the time.
 Quite the opposite, in fact. John thus decides to be **pessimistic** instead.
 
-This design allows us to annotate most **JSON-related methods** and [Template](#templates-) **conversions** as `@NotNull`, which resolves the unsafe chains of potential `NPE`s you get in other libraries.
+This design allows us to annotate most **JSON-related methods** and [Template](#templates) **conversions** as `@NotNull`, which resolves the unsafe chains of potential `NPE`s you get in other libraries.
 
 It's worth noting that John keeps track of _source spans_, the source locations of **each element**, to visually enhance most error messages.
 

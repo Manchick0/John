@@ -33,7 +33,7 @@ public interface NumericTemplate extends Template<Number> {
             }
 
             @Override
-            public String name() {
+            public String name(boolean potentialRecursion) {
                 var name = NumericTemplate.this.name();
                 if (NumericTemplate.this instanceof RangeTemplate)
                     return "~(" + name + ")";

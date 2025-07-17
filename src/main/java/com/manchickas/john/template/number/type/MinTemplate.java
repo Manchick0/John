@@ -32,7 +32,7 @@ public final class MinTemplate implements NumericTemplate {
     }
 
     @Override
-    public String name() {
+    public String name(boolean potentialRecursion) {
         return this.min + "..";
     }
 }

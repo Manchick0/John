@@ -4,9 +4,7 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
 import org.jetbrains.annotations.NotNull;
 
-public final class PropertySegment implements PathSegment {
-
-    private final String name;
+public record PropertySegment(String name) implements PathSegment {
 
     public PropertySegment(String name) {
         this.name = name;
@@ -18,7 +16,12 @@ public final class PropertySegment implements PathSegment {
     }
 
     @Override
-    public String toString() {
+    public int depth() {
+        return 1;
+    }
+
+    @Override
+    public @NotNull String toString() {
         return this.name;
     }
 }

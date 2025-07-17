@@ -13,6 +13,11 @@ public record SubscriptOperator(PathSegment operand, int index) implements PathS
     }
 
     @Override
+    public int depth() {
+        return this.operand.depth() + 1;
+    }
+
+    @Override
     public @NotNull String toString() {
         return this.operand.toString() + '[' + this.index + ']';
     }

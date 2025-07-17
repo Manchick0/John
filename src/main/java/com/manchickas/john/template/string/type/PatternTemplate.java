@@ -46,7 +46,7 @@ public final class PatternTemplate implements StringTemplate {
     }
 
     @Override
-    public String name() {
+    public String name(boolean potentialRecursion) {
         return this.pattern.toString();
     }
 }

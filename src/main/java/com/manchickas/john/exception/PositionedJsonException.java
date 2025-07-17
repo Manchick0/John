@@ -18,8 +18,8 @@ public final class PositionedJsonException extends JsonException {
 
     @Override
     public String getMessage(boolean format) {
-        return this.span.underlineSource(format) + "\n"
-                + this.span + " " + super.getMessage();
+        return '\n' + this.span.underlineSource(format) + '\n'
+                + this.span + ' ' + super.getMessage();
     }
 
     @Override

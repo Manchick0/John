@@ -58,7 +58,7 @@ public final class ArrayTemplate<T> implements Template<T[]> {
     }
 
     @Override
-    public String name() {
-        return this.template.name() + "[]";
+    public String name(boolean potentialRecursion) {
+        return this.template.name(potentialRecursion) + "[]";
     }
 }

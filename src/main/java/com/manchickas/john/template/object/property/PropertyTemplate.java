@@ -52,8 +52,8 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
     }
 
     @Override
-    public String name() {
-        return this.property + ": " + this.template.name();
+    public String name(boolean potentialRecursion) {
+        return this.property + ": " + this.template.name(potentialRecursion);
     }
 
     public T access(Instance instance) {
