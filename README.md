@@ -2,7 +2,19 @@
 
 > Perhaps the most modern and declarative JSON library Java has to offer.
 
+John is a modern, declarative, JSON library written entirely in Java that attempts to provide an alternative way to reason about your JSON. In many ways, it's a paradigm shift from other **imperative** libraries like [GSON](https://github.com/google/gson/tree/main).
+
+## Why John? ⁉️
+
+The John library differs **significantly** from most other JSON libraries in its core philosophy. John does **not** rely on reflection in any form. Instead,
+you define the structure of your data with [Templates](#templates), which then ensure the JSON matches your expected schema **1:1**. If anything goes wrong, an _exceptionally rich exception_
+will get thrown with the faulty source line and positions.
+
+The Template system in many ways resembles [Zod](https://zod.dev/), but tailored specifically for JSON and Java design patterns.
+
 ## Getting Started ⚙️
+
+To invite your new _co-worker_ to your project, include the following lines in your build file:
 
 ```xml
 <dependency>
@@ -10,6 +22,30 @@
     <artifactId>john</artifactId>
     <version>1.0.0</version>
 </dependency>
+```
+
+> [!TIP]
+> Replace `1.0.0` with the latest version from Maven Central.
+
+```java
+public static void main(String[] args) {
+    try {
+        // Parse the source into a generic JSON structure.
+        var json = John.parse("""
+                {
+                    "name": "Marie",
+                    "age": 18
+                }
+                """);
+        // Extract the 'name' property using the generic 'STRING' template.
+        String name = json.get("./name", Template.STRING);
+        // Greet our dear Marie!
+        System.out.printf("Hello, %s!%n", name);
+    } catch (JsonException e) {
+        // Print the message with ASCII formatting enabled.
+        System.err.println(e.getMessage(true));
+    }
+}
 ```
 
 ## Path Your Way Through 👣
@@ -57,31 +93,5 @@ Any additional validation defined by the template is performed in-place for both
 
 Templates are **stateless**. They define _how to process the value_, not the value to process. This pattern allows you to **re-use** existing templates
 as much as you'd want to. Most templates should therefore be defined as `public static final` constants, rather than inlined into whichever method expects one.
-
-### Basic Templates
-
-Suppose you're working on a backend for a delivery company, called **NotDHL**. Once a client sends a package, you receive a JSON payload describing the sent package.
-
-```json
-{
-    "package": 41275,
-    "weight": 3.5
-}
-```
-
-Let's say we want to retrieve the `weight` of the package. How would we do that? Well, in those _rare cases_ where we only care about the weight, we could first parse the JSON and use a [JsonPath](#path-your-way-through) to get the `weight` node.
-
-```java
-var json = John.parse(payload);
-var weight = json.get("./weight");
-```
-
-Alright, we got the `weight` out of the JSON, but what gives? Didn't we expect a number, and not a `JsonElement`? Well, **we** did. But **John** had no way to find that out. Let's prompt him nicely. 
-
-```java
-var number = weight.expect(Template.NUMBER);
-```
-
-Just like that, you can see a basic **Template** in action.
 
 
