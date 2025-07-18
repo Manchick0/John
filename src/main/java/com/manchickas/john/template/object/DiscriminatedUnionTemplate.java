@@ -55,7 +55,7 @@ public final class DiscriminatedUnionTemplate<Disc, Instance> implements Templat
     }
 
     @Override
-    public String name(boolean potentialRecursion) {
+    public String name() {
         return "{ " + this.discriminator.name() + ", ... }";
     }
 }

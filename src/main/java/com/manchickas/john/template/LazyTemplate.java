@@ -30,11 +30,8 @@ public final class LazyTemplate<T> implements Template<T> {
     }
 
     @Override
-    public String name(boolean potentialRecursion) {
-        if (potentialRecursion)
-            return "...";
-        return this.getOrCache()
-                .name();
+    public String name() {
+        return ">...";
     }
 
     private Template<T> getOrCache() {

@@ -4,27 +4,73 @@ import java.util.Optional;
 
 public interface LexemeType<T> {
 
-    LexemeType<Character> SEPARATOR = (obj) -> {
-        if (obj instanceof Character c)
-            return Optional.of(c);
-        return Optional.empty();
-    };
-    LexemeType<String> STRING = (obj) -> {
-        if (obj instanceof String s)
-            return Optional.of(s);
-        return Optional.empty();
-    };
-    LexemeType<Number> NUMBER = (obj) -> {
-        if (obj instanceof Number n)
-            return Optional.of(n);
-        return Optional.empty();
-    };
-    LexemeType<Boolean> BOOLEAN = (obj) -> {
-        if (obj instanceof Boolean b)
-            return Optional.of(b);
-        return Optional.empty();
-    };
-    LexemeType<Void> NULL = (obj) -> Optional.empty();
+    LexemeType<Character> SEPARATOR = new LexemeType<>() {
 
-    Optional<T> parse(Object other);
+        @Override
+        public Optional<Character> parse(Object obj) {
+            if (obj instanceof Character c)
+                return Optional.of(c);
+            return Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return "separator";
+        }
+    };
+    LexemeType<String> STRING = new LexemeType<>() {
+
+        @Override
+        public Optional<String> parse(Object obj) {
+            if (obj instanceof String s)
+                return Optional.of(s);
+            return Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return "string";
+        }
+    };
+    LexemeType<Number> NUMBER = new LexemeType<>() {
+
+        @Override
+        public Optional<Number> parse(Object obj) {
+            if (obj instanceof Number n)
+                return Optional.of(n);
+            return Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return "number";
+        }
+    };
+    LexemeType<Boolean> BOOLEAN = new LexemeType<>() {
+        @Override
+        public Optional<Boolean> parse(Object obj) {
+            if (obj instanceof Boolean b)
+                return Optional.of(b);
+            return Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return "boolean";
+        }
+    };
+    LexemeType<Void> NULL = new LexemeType<>() {
+
+        @Override
+        public Optional<Void> parse(Object obj) {
+            return Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return "null";
+        }
+    };
+
+    Optional<T> parse(Object obj);
 }

@@ -35,7 +35,7 @@ public final class DefaultedPropertyTemplate<Instance, T> extends PropertyTempla
     }
 
     @Override
-    public String name(boolean potentialRecursion) {
-        return this.property + "?: " + this.template.name(true);
+    public String name() {
+        return this.property + "?: " + this.template.name();
     }
 }

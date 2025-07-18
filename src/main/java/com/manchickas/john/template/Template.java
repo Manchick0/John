@@ -70,7 +70,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name(boolean potentialRecursion) {
+        public String name() {
             return "null";
         }
     };
@@ -93,7 +93,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name(boolean potentialRecursion) {
+        public String name() {
             return "any";
         }
     };
@@ -123,7 +123,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name(boolean potentialRecursion) {
+        public String name() {
             return "string";
         }
     };
@@ -148,7 +148,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name(boolean potentialRecursion) {
+        public String name() {
             return "number";
         }
     };
@@ -174,7 +174,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name(boolean potentialRecursion) {
+        public String name() {
             return "boolean";
         }
     };
@@ -336,7 +336,7 @@ public interface Template<T> {
             }
 
             @Override
-            public String name(boolean potentialRecursion) {
+            public String name() {
                 return "never";
             }
         };
@@ -366,11 +366,7 @@ public interface Template<T> {
      */
     Result<T> parse(JsonElement element);
     Result<JsonElement> serialize(T value);
-    String name(boolean potentialRecursion);
-
-    default String name() {
-        return this.name(false);
-    }
+    String name();
 
     /**
      * Composes a {@link Template} that resolves to an array, the element type of which corresponds to that of the current template.
@@ -384,6 +380,16 @@ public interface Template<T> {
         return new ArrayTemplate<>(this, factory);
     }
 
+    /**
+     * Composes a {@link Template} that accesses the provided {@code name} property on a {@link com.manchickas.john.ast.JsonObject}
+     * using the current template, and serializes the property by first accessing it with the provided {@link PropertyAccessor}, and then delegating
+     * to the current template.
+     *
+     * @param name the name of the property.
+     * @param accessor a {@link PropertyAccessor} that specifies how to access the property from an instance.
+     * @return a {@link Template} representing the {@link PropertyTemplate}.
+     * @param <Instance> the type on which the property can be accessed.
+     */
     default <Instance> PropertyTemplate<Instance, T> property(String name, PropertyAccessor<Instance, T> accessor) {
         return new RequiredPropertyTemplate<>(name, this, accessor);
     }
@@ -404,8 +410,8 @@ public interface Template<T> {
             }
 
             @Override
-            public String name(boolean potentialRecursion) {
-                return Template.this.name(potentialRecursion);
+            public String name() {
+                return Template.this.name();
             }
         };
     }
@@ -426,8 +432,8 @@ public interface Template<T> {
             }
 
             @Override
-            public String name(boolean potentialRecursion) {
-                return Template.this.name(potentialRecursion);
+            public String name() {
+                return Template.this.name();
             }
         };
     }
@@ -460,12 +466,19 @@ public interface Template<T> {
             }
 
             @Override
-            public String name(boolean potentialRecursion) {
-                return Template.this.name(potentialRecursion);
+            public String name() {
+                return Template.this.name();
             }
         };
     }
 
+    /**
+     * Composes a {@link Template} that supplies a default {@code other} value if the underlying template couldn't produce a value itself.
+     * <br><br>
+     * The composed {@link Template} effectively never mismatches for {@link #parse(JsonElement)} operations.
+     * @param other the default value to supply.
+     * @return
+     */
     default Template<T> orElse(T other) {
         return new Template<>() {
 
@@ -486,8 +499,8 @@ public interface Template<T> {
             }
 
             @Override
-            public String name(boolean potentialRecursion) {
-                return Template.this.name(potentialRecursion) + '?';
+            public String name() {
+                return Template.this.name() + '?';
             }
         };
     }

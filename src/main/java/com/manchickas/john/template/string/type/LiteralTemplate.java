@@ -51,7 +51,7 @@ public final class LiteralTemplate implements StringTemplate {
     }
 
     @Override
-    public String name(boolean potentialRecursion) {
+    public String name() {
         return '"' + this.literal + '"';
     }
 }

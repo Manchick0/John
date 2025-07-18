@@ -48,6 +48,7 @@ One of the most distinctive features of the John library is **Templates**. Templ
 
 The John library uses templates **excessively**, so understanding them deeply is a **crucial step** in mastering John.
 Templates are **bidirectional**. They define both how to **parse** a specific JSON element and how to **serialize** a correctly typed value back into JSON.
+
 Any additional validation defined by the template is performed in-place for both of these steps.
 
 > [!NOTE]
@@ -55,7 +56,32 @@ Any additional validation defined by the template is performed in-place for both
 > them, which, when used correctly, almost completely eliminate the purpose in defining your own templates from scratch.
 
 Templates are **stateless**. They define _how to process the value_, not the value to process. This pattern allows you to **re-use** existing templates
-as much as you'd want to. Most templates should therefore be defined as `public static final` constants, rather than inlined into whatever method expects one.
+as much as you'd want to. Most templates should therefore be defined as `public static final` constants, rather than inlined into whichever method expects one.
 
 ### Basic Templates
+
+Suppose you're working on a backend for a delivery company, called **NotDHL**. Once a client sends a package, you receive a JSON payload describing the sent package.
+
+```json
+{
+    "package": 41275,
+    "weight": 3.5
+}
+```
+
+Let's say we want to retrieve the `weight` of the package. How would we do that? Well, in those _rare cases_ where we only care about the weight, we could first parse the JSON and use a [JsonPath](#path-your-way-through) to get the `weight` node.
+
+```java
+var json = John.parse(payload);
+var weight = json.get("./weight");
+```
+
+Alright, we got the `weight` out of the JSON, but what gives? Didn't we expect a number, and not a `JsonElement`? Well, **we** did. But **John** had no way to find that out. Let's prompt him nicely. 
+
+```java
+var number = weight.expect(Template.NUMBER);
+```
+
+Just like that, you can see a basic **Template** in action.
+
 

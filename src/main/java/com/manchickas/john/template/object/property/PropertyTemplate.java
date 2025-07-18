@@ -22,6 +22,13 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
         this.accessor = accessor;
     }
 
+    /**
+     * Composes a {@link Template} that supplies the provided {@code other} value if the required
+     * property was not present on the {@link JsonObject} altogether.
+     *
+     * @param other the default value.
+     * @return a {@link Template} that represents the optional operation.
+     */
     @Override
     public abstract PropertyTemplate<Instance, T> orElse(T other);
     protected abstract Result<T> missingResult(SourceSpan span);
@@ -52,8 +59,8 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
     }
 
     @Override
-    public String name(boolean potentialRecursion) {
-        return this.property + ": " + this.template.name(potentialRecursion);
+    public String name() {
+        return this.property + ": " + this.template.name();
     }
 
     public T access(Instance instance) {

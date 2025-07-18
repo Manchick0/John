@@ -25,14 +25,14 @@ public abstract class RecordTemplate<Instance> implements Template<Instance> {
     }
 
     @Override
-    public String name(boolean potentialRecursion) {
+    public String name() {
         var builder = new StringBuilder("{ ");
         var props = this.properties();
         for (var i = 0; i < props.size(); i++) {
             var property = props.get(i);
             if (i > 0)
                 builder.append(", ");
-            builder.append(property.name(true));
+            builder.append(property.name());
         }
         return builder.append(" }")
                 .toString();

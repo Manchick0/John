@@ -34,7 +34,7 @@ public final class Lexer extends StringReader {
             }
             if (c == '"')
                 return this.readString();
-            if (StringReader.isDigit(c) || (StringReader.isSign(c) && StringReader.isDigit(this.peekAhead(1))))
+            if (StringReader.isDigit(c) || (c == '-' && StringReader.isDigit(this.peekAhead(1))))
                 return this.readNumber();
             return this.readGenericLexeme();
         }
@@ -64,7 +64,7 @@ public final class Lexer extends StringReader {
         var readingDecimal = false;
         var readingExponent = false;
         this.pushStamp();
-        if (StringReader.isSign(this.peek()))
+        if (this.peek() == '-')
             this.read();
         while (this.canRead()) {
             var c = this.peek();
