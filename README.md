@@ -7,7 +7,7 @@ John is a modern, declarative, JSON library written entirely in Java that attemp
 ## Why John? ⁉️
 
 The John library differs **significantly** from most other JSON libraries in its core philosophy. John does **not** rely on reflection in any form. Instead,
-you define the structure of your data with [Templates](#templates-🗞️), which then ensure the JSON matches your expected schema **1:1**. If anything goes wrong, an _exceptionally rich exception_
+you define the structure of your data with [Template](#templates), which then ensure the JSON matches your expected schema **1:1**. If anything goes wrong, an _exceptionally rich exception_
 will get thrown with the faulty source line and positions.
 
 The Template system in many ways resembles [Zod](https://zod.dev/), but tailored specifically for JSON and Java design patterns.
@@ -82,7 +82,7 @@ Instead of being lenient and unsafe, John uses a single, **checked exception** �
 Since in most cases JSON is parsed from an _arbitrary string_, you should **not** assume the parsing will succeed most of the time.
 Quite the opposite, in fact. John thus decides to be **pessimistic** instead.
 
-This design allows us to annotate most **JSON-related methods** and [Template](#templates-🗞️) **conversions** as `@NotNull`, which resolves the unsafe chains of potential `NPE`s you get in other libraries.
+This design allows us to annotate most **JSON-related methods** and [Template](#templates) **conversions** as `@NotNull`, which resolves the unsafe chains of potential `NPE`s you get in other libraries.
 
 It's worth noting that John keeps track of _source spans_, the source locations of **each element**, to visually enhance most error messages.
 
@@ -92,6 +92,7 @@ It's worth noting that John keeps track of _source spans_, the source locations 
 (2:16-17) Encountered an unknown escape sequence '\w'.
 ```
 
+<a name="templates"></a>
 ## Templates 🗞️
 
 One of the most distinctive features of the John library is **Templates**. Templates may be seen as a way to _scaffold your JSON_.
