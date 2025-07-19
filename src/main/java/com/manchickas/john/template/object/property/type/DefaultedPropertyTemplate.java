@@ -1,11 +1,10 @@
 package com.manchickas.john.template.object.property.type;
 
 import com.manchickas.john.position.SourceSpan;
-import com.manchickas.john.template.LazyTemplate;
 import com.manchickas.john.template.Template;
 import com.manchickas.john.template.object.property.PropertyAccessor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 
 public final class DefaultedPropertyTemplate<Instance, T> extends PropertyTemplate<Instance, T> {
 

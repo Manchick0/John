@@ -3,7 +3,7 @@ package com.manchickas.john.template.object.property.type;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.object.property.PropertyAccessor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
 
 public final class RequiredPropertyTemplate<Instance, T> extends PropertyTemplate<Instance, T> {

@@ -2,7 +2,6 @@ package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonNull;
-import com.manchickas.john.util.Result;
 
 public final class NullTemplate implements Template<Void> {
 

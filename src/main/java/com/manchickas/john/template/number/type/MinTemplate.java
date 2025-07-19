@@ -3,7 +3,7 @@ package com.manchickas.john.template.number.type;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonNumber;
 import com.manchickas.john.template.number.NumericTemplate;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 
 public final class MinTemplate implements NumericTemplate {
 

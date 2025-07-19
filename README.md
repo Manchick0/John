@@ -34,12 +34,22 @@ public static void main(String[] args) {
         var json = John.parse("""
                 {
                     "name": "Marie",
-                    "age": 18
+                    "age": 18,
+                    "friends": [
+                        {
+                            "name": "Bob",
+                            "age": 20
+                        },
+                        {
+                            "name": "Alice",
+                            "age": 19
+                        }
+                    ]
                 }
                 """);
-        // Extract the 'name' property using the generic 'STRING' template.
-        String name = json.get("./name", Template.STRING);
-        // Greet our dear Marie!
+        // Extract the 'name' property of the second friend using the generic 'STRING' template.
+        String name = json.get("./friends[1]/name", Template.STRING);
+        // Greet our dear Alice!
         System.out.printf("Hello, %s!%n", name);
     } catch (JsonException e) {
         // Print the message with ASCII formatting enabled.
@@ -50,15 +60,19 @@ public static void main(String[] args) {
 
 ## Path Your Way Through 👣
 
-The John library secretly has a **DSL** built specifically for **arbitrary** JSON navigation, called [Json Paths](./src/main/java/com/manchickas/john/path/JsonPath.java).
+The John library has a **DSL** built for quick JSON navigation, called [Json Paths](./src/main/java/com/manchickas/john/path/JsonPath.java).
 The syntax was specifically designed to strongly resemble _file-system paths_.
 
-A JSON Path consists of multiple segments. Each segment is separated from the preceding one with a forward slash.
-The path may start with a **dot** `./`, specifying it's relative to the current node.
+A JSON Path consists of multiple segments. Each segment is separated from the preceding one with a forward slash, and represents
+a property in a JSON object. The path may start with a **dot** `./`, specifying it's relative to the current node.
 
 > [!NOTE]
 > Paths are **always relative** to the node they get resolved against.
-> Including a dot at the very beginning of the path is a purely **stylistic choice**, unless you're pairing it with the _subscript operator_, or using it as a _root-path_.
+> Including a dot at the very beginning of the path is purely a **stylistic choice**, unless you're pairing it with the _subscript operator_, or using it as a _root-path_.
+
+A segment may be followed by a **subscript operator**, in form of `segment[0]`. The subscript operator expects
+the segment to resolve to an array, and then accesses the element of that array at the provided index. Subscript operators
+may be chained for multidimensional arrays.
 
 ## Fail-fast Model 🧨
 
@@ -94,4 +108,29 @@ Any additional validation defined by the template is performed in-place for both
 Templates are **stateless**. They define _how to process the value_, not the value to process. This pattern allows you to **re-use** existing templates
 as much as you'd want to. Most templates should therefore be defined as `public static final` constants, rather than inlined into whichever method expects one.
 
+## Capabilities ⚓
 
+Although the Template system may seem restrictive because of its declarative nature, we assure you it's possible to model
+most JSON structures using clever Template composition.
+
+The example we've provided at the very top of the document showcases the simplest template usage to access a nested property
+from a JSON object. We could, however, use more advanced templates to model the whole `Person` directly, including validation
+and recursion.
+
+```java
+public record Person(String name, int age, Person[] friends) {
+
+    public static final Template<Person> TEMPLATE = Template.record(
+            Template.STRING.property("name", Person::name),
+            Template.range(18, 65)
+                    .requireWhole()
+                    .asInteger()
+                    .property("age", Person::age),
+            Template.lazy(() -> Person.TEMPLATE)
+                    .array(Person[]::new)
+                    .property("friends", Person::friends)
+                    .orElse(new Person[0]),
+            Person::new
+    );
+}
+```

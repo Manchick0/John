@@ -2,7 +2,7 @@ package com.manchickas.john.template.string;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonString;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
 
 import java.util.regex.Pattern;

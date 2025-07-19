@@ -5,7 +5,7 @@ import com.manchickas.john.ast.JsonObject;
 import com.manchickas.john.template.object.RecordTemplate;
 import com.manchickas.john.template.object.constructor.PentaConstructor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 
 import java.util.List;
 

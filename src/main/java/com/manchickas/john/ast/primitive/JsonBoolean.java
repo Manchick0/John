@@ -1,5 +1,6 @@
 package com.manchickas.john.ast.primitive;
 
+import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.Nullable;
 

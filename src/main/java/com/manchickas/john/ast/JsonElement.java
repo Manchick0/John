@@ -8,19 +8,36 @@ import com.manchickas.john.template.Template;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a single node in a JSON structure.
+ * <br><br>
+ * Each {@link JsonElement} carries its {@link SourceSpan} that mirrors its
+ * position in the original source string it was parsed from. When an element is created
+ * programmatically, its {@link SourceSpan} is set to {@code null}.
+ * <br><br>
+ * The {@link JsonElement} doesn't provide enough meaningful ways to introspect the underlying
+ * element and its structure. Instead, an excessive usage of {@link Template}s is assumed.
+ */
 public abstract class JsonElement {
 
     @Nullable
     protected final SourceSpan span;
 
-    public JsonElement() {
+    protected JsonElement() {
         this(null);
     }
 
-    public JsonElement(@Nullable SourceSpan span) {
+    protected JsonElement(@Nullable SourceSpan span) {
         this.span = span;
     }
 
+    /**
+     * Attempts to parse the current {@link JsonElement} according the provided {@link Template}.
+     *
+     * @param template the {@link Template} this element <b>must</b> satisfy.
+     * @return the parsed from the current element value.
+     * @throws JsonException if the element doesn't satisfy the provided {@link Template}.
+     */
     @NotNull
     public <T> T expect(Template<T> template) throws JsonException {
         var result = template.wrapParseMismatch(this);
@@ -30,32 +47,63 @@ public abstract class JsonElement {
                 .withSpan(result.span());
     }
 
+    /**
+     * Attempts to access the element at the provided path, relative to the current element.
+     *
+     * @param path the path to traverse.
+     * @return the {@link JsonElement} at the provided path.
+     * @throws JsonException if the JSON structure doesn't match the one expected by the path.
+     */
     @NotNull
     public JsonElement get(String path) throws JsonException {
         return this.get(JsonPath.compile(path));
     }
 
+    /**
+     * Attempts to access the element at the provided precompiled {@link JsonPath}, relative to the current element.
+     *
+     * @param path the path to traverse.
+     * @return the {@link JsonElement} at the provided path.
+     * @throws JsonException if the JSON structure doesn't match the one expected by the path.
+     */
     @NotNull
     public JsonElement get(JsonPath path) throws JsonException {
         return path.traverse(this);
     }
 
+    /**
+     * Attempts to parse the element at the provided path according to the provided {@link JsonElement}.
+     *
+     * @param path the path to traverse.
+     * @param template the {@link Template} the element at the provided path must satisfy.
+     * @return the parsed from the {@link JsonElement} value.
+     * @throws JsonException if the JSON structure doesn't match the one expected by the path, or the retrieved {@link JsonElement} doesn't satisfy the provided {@link Template}.
+     */
     @NotNull
     public <T> T get(String path, Template<T> template) throws JsonException {
         return this.get(JsonPath.compile(path), template);
     }
 
+    /**
+     * Attempts to parse the element at the provided precompiled {@link JsonPath} according to the provided {@link JsonElement}.
+     *
+     * @param path the path to traverse.
+     * @param template the {@link Template} the element at the provided path must satisfy.
+     * @return the parsed from the {@link JsonElement} value.
+     * @throws JsonException if the JSON structure doesn't match the one expected by the path, or the retrieved {@link JsonElement} doesn't satisfy the provided {@link Template}.
+     */
     @NotNull
     public <T> T get(JsonPath path, Template<T> template) throws JsonException {
         return this.get(path).expect(template);
     }
 
     /**
-     * Attempts to retrieve the provided property from the {@link JsonObject}.
+     * Attempts to retrieve the provided property from the {@link JsonElement}.
      *
      * @param name the property to retrieve.
      * @return the value of the provided property.
-     * @throws JsonException in case the property is not present on the object, or the element doesn't represent an object in the first place.
+     * @throws JsonException if the current {@link JsonElement} doesn't represent an object,
+     *      or the property is missing on the object.
      */
     @NotNull
     public JsonElement property(String name) throws JsonException {
@@ -64,11 +112,12 @@ public abstract class JsonElement {
     }
 
     /**
-     * Attempts to retrieve the provided index from the {@link JsonArray}.
+     * Attempts to retrieve the provided index from the {@link JsonElement}.
      *
-     * @param index the index to retrive.
+     * @param index the index to retrieve.
      * @return the value at the provided index.
-     * @throws JsonException in case a negative index is provided, the array contains too few elements, or the element doesn't represent an array in the first place.
+     * @throws JsonException if the current {@link JsonElement} doesn't represent an object,
+     *      a negative index was provided, or the array contains too few elements.
      */
     @NotNull
     public JsonElement subscript(int index) throws JsonException {
@@ -93,5 +142,10 @@ public abstract class JsonElement {
     @Nullable
     public SourceSpan span() {
         return this.span;
+    }
+
+    @Override
+    public String toString() {
+        return John.stringify(this);
     }
 }

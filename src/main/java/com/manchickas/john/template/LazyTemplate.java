@@ -1,7 +1,6 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
-import com.manchickas.john.util.Result;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;

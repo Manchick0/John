@@ -97,7 +97,7 @@ public final class John {
     }
 
     /**
-     * Attempts to serialize the provided {@code element} into a {@link JsonElement} according to the provided {@link Template}.
+     * Attempts to serialize the provided {@code element} to a {@link JsonElement} according to the provided {@link Template}.
      *
      * @param element the element to serialize.
      * @param template the template the element must satisfy.
@@ -135,7 +135,7 @@ public final class John {
         try {
             return John.stringifyPattern(element.stringifyPattern(), indentation);
         } catch (JsonException e) {
-            throw new IllegalStateException("A stringify pattern internally returned by a JsonElement (%s) was incorrectly formatted."
+            throw new AssertionError("A stringify pattern returned by a JsonElement (%s) was incorrectly formatted."
                     .formatted(element.getClass().getSimpleName()), e);
         }
     }

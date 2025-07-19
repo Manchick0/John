@@ -3,7 +3,7 @@ package com.manchickas.john.template.object;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.JsonObject;
 import com.manchickas.john.template.object.property.PropertyTemplate;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
 
 import java.util.function.Function;

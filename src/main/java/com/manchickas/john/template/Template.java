@@ -19,7 +19,6 @@ import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.object.property.type.RequiredPropertyTemplate;
 import com.manchickas.john.template.string.LiteralTemplate;
 import com.manchickas.john.template.string.PatternTemplate;
-import com.manchickas.john.util.Result;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

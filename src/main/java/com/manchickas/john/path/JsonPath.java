@@ -10,9 +10,6 @@ import java.util.Arrays;
 
 /**
  * Represents a path in an arbitrary JSON structure.
- * <br><br>
- * {@link JsonPath}s are <b>stateless</b>, meaning they can be freely compiled and composed
- * before any {@link #traverse(JsonElement)} operation.
  */
 public final class JsonPath {
 
@@ -64,6 +61,9 @@ public final class JsonPath {
 
     /**
      * Traverses the JSON structure according to the {@link JsonPath}, starting at the provided {@code root}.
+     * <br><br>
+     * The JSON structure must fully satisfy the one expected by the {@link JsonPath},
+     * or else a {@link JsonException} will get thrown.
      *
      * @param root the element to traverse the path relative to.
      * @return the element relative to the provided {@code root}, according to the path.

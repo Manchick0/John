@@ -3,7 +3,7 @@ package com.manchickas.john.template.array;
 import com.manchickas.john.ast.JsonArray;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.exception.JsonException;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
 import com.manchickas.john.util.ArrayBuilder;
 

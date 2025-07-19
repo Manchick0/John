@@ -6,7 +6,7 @@ import com.manchickas.john.ast.primitive.JsonNull;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.Template;
-import com.manchickas.john.util.Result;
+import com.manchickas.john.template.Result;
 
 public abstract class PropertyTemplate<Instance, T> implements Template<T> {
 

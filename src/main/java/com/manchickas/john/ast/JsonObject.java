@@ -53,9 +53,4 @@ public final class JsonObject extends JsonElement {
                 .putAll(this.elements)
                 .buildKeepingLast());
     }
-
-    @Override
-    public String toString() {
-        return John.stringify(this);
-    }
 }
