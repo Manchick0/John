@@ -35,11 +35,11 @@ public final class PentaRecordTemplate<A, B, C, D, E, Instance> extends RecordTe
     @Override
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
-            return this.first.wrapParseMismatch(element).flatMap(first ->
-                this.second.wrapParseMismatch(element).flatMap(second ->
-                        this.third.wrapParseMismatch(element).flatMap(third ->
-                                this.fourth.wrapParseMismatch(element).flatMap(fourth ->
-                                        this.fifth.wrapParseMismatch(element).flatMap(fifth -> {
+            return this.first.parseAndPromote(element).flatMap(first ->
+                this.second.parseAndPromote(element).flatMap(second ->
+                        this.third.parseAndPromote(element).flatMap(third ->
+                                this.fourth.parseAndPromote(element).flatMap(fourth ->
+                                        this.fifth.parseAndPromote(element).flatMap(fifth -> {
                                             var instance = this.constructor.construct(first, second, third, fourth, fifth);
                                             return Result.success(instance);
                                         })))));

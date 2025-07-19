@@ -23,7 +23,7 @@ public final class UniRecordTemplate<Instance, A> extends RecordTemplate<Instanc
     @Override
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
-            return this.first.wrapParseMismatch(element).flatMap(first -> {
+            return this.first.parseAndPromote(element).flatMap(first -> {
                 var instance = this.constructor.construct(first);
                 return Result.success(instance);
             });

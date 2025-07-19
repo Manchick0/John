@@ -26,8 +26,8 @@ public final class BiRecordTemplate<A, B, Instance> extends RecordTemplate<Insta
     @Override
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
-            return this.first.wrapParseMismatch(element).flatMap(first ->
-                this.second.wrapParseMismatch(element).flatMap(second -> {
+            return this.first.parseAndPromote(element).flatMap(first ->
+                this.second.parseAndPromote(element).flatMap(second -> {
                     var instance = this.constructor.construct(first, second);
                     return Result.success(instance);
                 }));

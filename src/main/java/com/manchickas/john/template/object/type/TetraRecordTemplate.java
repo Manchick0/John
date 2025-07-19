@@ -32,10 +32,10 @@ public final class TetraRecordTemplate<A, B, C, D, Instance> extends RecordTempl
     @Override
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
-            return this.first.wrapParseMismatch(element).flatMap(first ->
-                this.second.wrapParseMismatch(element).flatMap(second ->
-                        this.third.wrapParseMismatch(element).flatMap(third ->
-                                this.fourth.wrapParseMismatch(element).flatMap(fourth -> {
+            return this.first.parseAndPromote(element).flatMap(first ->
+                this.second.parseAndPromote(element).flatMap(second ->
+                        this.third.parseAndPromote(element).flatMap(third ->
+                                this.fourth.parseAndPromote(element).flatMap(fourth -> {
                                     var instance = this.constructor.construct(first, second, third, fourth);
                                     return Result.success(instance);
                                 }))));

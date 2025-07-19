@@ -44,14 +44,14 @@ public final class OctaRecordTemplate<A, B, C, D, E, F, H, I, Instance> extends 
     @Override
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
-            return this.first.wrapParseMismatch(element).flatMap(first ->
-                this.second.wrapParseMismatch(element).flatMap(second ->
-                        this.third.wrapParseMismatch(element).flatMap(third ->
-                                this.fourth.wrapParseMismatch(element).flatMap(fourth ->
-                                        this.fifth.wrapParseMismatch(element).flatMap(fifth ->
-                                                this.sixth.wrapParseMismatch(element).flatMap(sixth ->
-                                                        this.seventh.wrapParseMismatch(element).flatMap(seventh ->
-                                                                this.eighth.wrapParseMismatch(element).flatMap(eighth -> {
+            return this.first.parseAndPromote(element).flatMap(first ->
+                this.second.parseAndPromote(element).flatMap(second ->
+                        this.third.parseAndPromote(element).flatMap(third ->
+                                this.fourth.parseAndPromote(element).flatMap(fourth ->
+                                        this.fifth.parseAndPromote(element).flatMap(fifth ->
+                                                this.sixth.parseAndPromote(element).flatMap(sixth ->
+                                                        this.seventh.parseAndPromote(element).flatMap(seventh ->
+                                                                this.eighth.parseAndPromote(element).flatMap(eighth -> {
                                                                     var instance = this.constructor.construct(first, second, third, fourth, fifth, sixth, seventh, eighth);
                                                                     return Result.success(instance);
                                                                 }))))))));

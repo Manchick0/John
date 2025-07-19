@@ -28,7 +28,7 @@ public final class ArrayTemplate<T> implements Template<T[]> {
             for (var i = 0; i < length; i++) {
                 try {
                     var el = array.subscript(i);
-                    var result = this.template.wrapParseMismatch(el);
+                    var result = this.template.parseAndPromote(el);
                     if (result.isSuccess()) {
                         builder.append(result.unwrap());
                         continue;
@@ -47,7 +47,7 @@ public final class ArrayTemplate<T> implements Template<T[]> {
     public Result<JsonElement> serialize(T[] value) {
         var builder = ArrayBuilder.<JsonElement>builderWithExpectedSize(value.length);
         for (var v : value) {
-            var result = this.template.wrapSerializeMismatch(v);
+            var result = this.template.serialize(v);
             if (result.isSuccess()) {
                 builder.append(result.unwrap());
                 continue;

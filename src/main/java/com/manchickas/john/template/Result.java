@@ -1,6 +1,5 @@
 package com.manchickas.john.template;
 
-import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.position.SourceSpan;
 
 import java.util.NoSuchElementException;
@@ -17,8 +16,7 @@ import java.util.function.Function;
  * carries a message and the {@link SourceSpan} of the exact {@link com.manchickas.john.ast.JsonElement JsonElement} that caused the error.
  * <br><br>
  * A {@link Mismatch} is used internally by {@link com.manchickas.john.template.Template Template}s to represent an operation
- * that failed to match the current {@link Template}, and gets promoted to an {@link Error} using either the {@link Template#wrapParseMismatch(JsonElement)}
- * or the {@link Template#wrapSerializeMismatch(Object)} method.
+ * that failed to match the current {@link Template}, and can be promoted to an error with {@link #promoteMismatch(String, SourceSpan)}.
  *
  * @param <T> the type of the value carried by a {@link Success successful} {@code Result}.
  */
@@ -65,6 +63,10 @@ public sealed interface Result<T> permits Result.Error, Result.Mismatch, Result.
         if (this.isSuccess())
             return mapper.apply(this.unwrap());
         return (Result<V>) this;
+    }
+
+    default Result<T> promoteMismatch(String message, SourceSpan span) {
+        return this;
     }
 
     record Success<T>(T value) implements Result<T> {
@@ -117,6 +119,11 @@ public sealed interface Result<T> permits Result.Error, Result.Mismatch, Result.
         @Override
         public SourceSpan span() {
             throw new IllegalStateException("Attempted to access the span on a mismatch result.");
+        }
+
+        @Override
+        public Result<T> promoteMismatch(String message, SourceSpan span) {
+            return Result.error(message, span);
         }
 
         @Override

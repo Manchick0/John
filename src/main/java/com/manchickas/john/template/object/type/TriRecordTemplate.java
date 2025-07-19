@@ -29,9 +29,9 @@ public final class TriRecordTemplate<A, B, C, Instance> extends RecordTemplate<I
     @Override
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
-            return this.first.wrapParseMismatch(element).flatMap(first ->
-                this.second.wrapParseMismatch(element).flatMap(second ->
-                        this.third.wrapParseMismatch(element).flatMap(third -> {
+            return this.first.parseAndPromote(element).flatMap(first ->
+                this.second.parseAndPromote(element).flatMap(second ->
+                        this.third.parseAndPromote(element).flatMap(third -> {
                             var instance = this.constructor.construct(first, second, third);
                             return Result.success(instance);
                         })));

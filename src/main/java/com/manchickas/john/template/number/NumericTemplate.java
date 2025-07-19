@@ -2,7 +2,6 @@ package com.manchickas.john.template.number;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.position.SourceSpan;
-import com.manchickas.john.template.number.type.RangeTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
 
@@ -34,10 +33,7 @@ public interface NumericTemplate extends Template<Number> {
 
             @Override
             public String name() {
-                var name = NumericTemplate.this.name();
-                if (NumericTemplate.this instanceof RangeTemplate)
-                    return "~(" + name + ")";
-                return "~" + name;
+                return NumericTemplate.this.name();
             }
         };
     }

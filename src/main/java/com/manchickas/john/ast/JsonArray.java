@@ -19,15 +19,18 @@ public final class JsonArray extends JsonElement {
 
     @Override
     public String stringifyPattern() {
-        var builder = new StringBuilder("[\\+n");
-        for (var i = 0; i < this.length(); i++) {
-            var element = this.elements[i];
-            if (i > 0)
-                builder.append(",\\s\\n");
-            builder.append(element.stringifyPattern());
+        if (this.elements.length > 0) {
+            var builder = new StringBuilder("[\\+n");
+            for (var i = 0; i < this.length(); i++) {
+                var element = this.elements[i];
+                if (i > 0)
+                    builder.append(",\\s\\n");
+                builder.append(element.stringifyPattern());
+            }
+            return builder.append("\\-n]")
+                    .toString();
         }
-        return builder.append("\\-n]")
-                .toString();
+        return "[]";
     }
 
     @Override

@@ -21,6 +21,8 @@ public final class JsonObject extends JsonElement {
 
     @Override
     public String stringifyPattern() {
+        if (this.elements.isEmpty())
+            return "{}";
         var builder = new StringBuilder("{\\+n");
         var i = 0;
         for (var entry : this.elements.entrySet()) {
@@ -43,7 +45,7 @@ public final class JsonObject extends JsonElement {
         var el = this.elements.get(name);
         if (el != null)
             return el;
-        throw new JsonException("Expected the object to contain the property '%s'", name)
+        throw new JsonException("Expected the object to include '%s' as a property.", name)
                 .withSpan(this.span);
     }
 

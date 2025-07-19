@@ -22,9 +22,9 @@ public final class DiscriminatedUnionTemplate<Disc, Instance> implements Templat
     @Override
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
-            return this.discriminator.wrapParseMismatch(element)
+            return this.discriminator.parseAndPromote(element)
                     .flatMap(disc -> this.resolver.apply(disc)
-                            .wrapParseMismatch(element)
+                            .parseAndPromote(element)
                             .map(t -> (Instance) t));
         return Result.mismatch();
     }

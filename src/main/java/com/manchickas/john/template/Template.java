@@ -377,20 +377,14 @@ public interface Template<T> {
         };
     }
 
-    default Result<T> wrapParseMismatch(JsonElement element) {
-        var result = this.parse(element);
-        if (result.isMismatch())
-            return new Result.Error<>("Expected a value that would satisfy the template of type '%s'"
-                    .formatted(this.name()), element.span());
-        return result;
+    default Result<T> parseAndPromote(JsonElement element) {
+        return this.parse(element).promoteMismatch("Expected a value that would satisfy the template of type '%s'"
+                .formatted(this.name()), element.span());
     }
 
-    default Result<JsonElement> wrapSerializeMismatch(T value) {
-        var result = this.serialize(value);
-        if (result.isMismatch())
-            return new Result.Error<>("Expected a value that would satisfy the template of type '%s'"
-                    .formatted(this.name()), SourceSpan.lineWide(value.toString(), 1));
-        return result;
+    default Result<JsonElement> serializeAndPromote(T value) {
+        return this.serialize(value).promoteMismatch("Expected a value that would satisfy the template of type '%s'"
+                .formatted(this.name()), SourceSpan.lineWide(value.toString(), 1));
     }
 
     /**

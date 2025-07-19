@@ -25,6 +25,20 @@ public final class John {
 
     private John() {}
 
+    public static void main(String[] args) {
+        try {
+            var source = """
+                    {
+                        "baz": "world"
+                    }
+            """;
+            var json = John.parse(source);
+            System.out.println(json.get("./baz", Template.STRING));
+        } catch (JsonException e) {
+            System.err.println(e.getMessage(true));
+        }
+    }
+
     /**
      * Attempts to parse the provided {@code source} into an arbitrary {@link JsonElement}.
      * <br><br>
@@ -107,29 +121,68 @@ public final class John {
      */
     @NotNull
     public static <T> JsonElement serialize(T element, Template<T> template) throws JsonException {
-        var result = template.wrapSerializeMismatch(element);
+        var result = template.serializeAndPromote(element);
         if (result.isSuccess())
             return result.unwrap();
         throw new JsonException(result.message())
                 .withSpan(result.span());
     }
 
+    /**
+     * Stringifies the provided {@code element} into a <b>minified</b> JSON string, by first
+     * {@link #serialize(Object, Template) serializing} it according to the provided {@link Template},
+     * and then delegating to the {@link JsonElement} stringification.
+     *
+     * @param element the element to stringify.
+     * @param template the {@link Template} the {@code element} must satisfy.
+     * @return the minified string representation of the {@code element}.
+     * @throws JsonException if the {@code element} doesn't satisfy the provided {@link Template}.
+     */
     @NotNull
     public static <T> String stringify(T element, Template<T> template) throws JsonException {
         return John.stringify(element, template, 0);
     }
 
+    /**
+     * Stringifies the provided {@code element} into a properly formatted JSON string, by
+     * first {@link #serialize(Object, Template) serializing} it according to the provided {@link Template},
+     * and then delegating to {@link JsonElement} stringification.
+     *
+     * @param element the element to stringify.
+     * @param template the {@link Template} the {@code element} must satisfy.
+     * @param indentation the number of spaces per nesting level.
+     * @return the string representation of the {@code element}.
+     * @throws JsonException if the {@code element} doesn't satisfy the provided {@link Template}.
+     */
     @NotNull
     public static <T> String stringify(T element, Template<T> template, int indentation) throws JsonException {
         return John.stringifyPattern(John.serialize(element, template)
                 .stringifyPattern(), indentation);
     }
 
+    /**
+     * Stringifies the provided {@link JsonElement} into a <b>minified</b> JSON string.
+     *
+     * @param element the {@link JsonElement} to stringify.
+     * @return the minified string representation of the {@link JsonElement}.
+     * @since 1.0.0
+     */
     @NotNull
     public static String stringify(JsonElement element) {
         return John.stringify(element, 0);
     }
 
+    /**
+     * Stringifies the provided {@link JsonElement} into a properly formatted JSON string.
+     * <br><br>
+     * The process is functionally identical to {@linkplain #stringifyPattern(String, int) stringifying} the pattern
+     * returned by {@link JsonElement#stringifyPattern()}.
+     *
+     * @param element the {@link JsonElement} to stringify.
+     * @param indentation the number of spaces per nesting level.
+     * @return the string representation of the {@link JsonElement}.
+     * @since 1.0.0
+     */
     @NotNull
     public static String stringify(JsonElement element, int indentation) {
         try {
@@ -140,9 +193,18 @@ public final class John {
         }
     }
 
+    /**
+     * Converts the provided {@code pattern} into a <b>minified</b> JSON string.
+     *
+     * @param pattern the stringify pattern to convert.
+     * @return the minified string representation of the {@code pattern}.
+     * @throws JsonException if the pattern contains any invalid escape sequences.
+     * @see #stringifyPattern(String, int)
+     * @since 1.0.0
+     */
     @NotNull
-    public static String stringifyPattern(JsonElement element) throws JsonException {
-        return John.stringifyPattern(element.stringifyPattern(), 0);
+    public static String stringifyPattern(String pattern) throws JsonException {
+        return John.stringifyPattern(pattern, 0);
     }
 
     /**
@@ -150,7 +212,7 @@ public final class John {
      * into a properly formatted JSON string.
      * <br><br>
      * While this method is used internally for most stringification logic, it <b>is</b> intended for
-     * manual usage in cases where you need to hack together some JSON quickly.
+     * public usage in cases where you need to hack together some JSON manually.
      *
      * <pre>{@code
      *      var pattern = """
@@ -164,6 +226,7 @@ public final class John {
      * @param indentation the number of spaces per nesting level.
      * @return the properly formatted JSON string.
      * @throws JsonException if the pattern contains any invalid escape sequences.
+     * @since 1.0.0
      */
     @NotNull
     public static String stringifyPattern(String pattern, int indentation) throws JsonException {

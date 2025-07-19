@@ -40,7 +40,7 @@ public abstract class JsonElement {
      */
     @NotNull
     public <T> T expect(Template<T> template) throws JsonException {
-        var result = template.wrapParseMismatch(this);
+        var result = template.parseAndPromote(this);
         if (result.isSuccess())
             return result.unwrap();
         throw new JsonException(result.message())

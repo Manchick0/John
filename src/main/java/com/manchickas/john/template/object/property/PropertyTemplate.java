@@ -47,7 +47,7 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
         if (element instanceof JsonObject object) {
             try {
                 var prop = object.property(this.property);
-                return this.template.wrapParseMismatch(prop);
+                return this.template.parseAndPromote(prop);
             } catch (JsonException e) {
                 return this.missingResult(element.span());
             }
@@ -57,7 +57,7 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
 
     @Override
     public Result<JsonElement> serialize(T value) {
-        return this.template.wrapSerializeMismatch(value);
+        return this.template.serializeAndPromote(value);
     }
 
     @Override

@@ -22,7 +22,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
-                </configuration>d
+                </configuration>
             </plugin>
         </plugins>
     </build>
