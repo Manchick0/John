@@ -10,7 +10,6 @@ import java.util.Set;
 
 public final class Lexer extends StringReader {
 
-    private static final Set<Integer> INDENTATION = Set.of((int) ' ', (int) '\t', (int) '\r', (int) '\n');
     private static final Set<Integer> SEPARATORS = Set.of((int) ',', (int) ':', (int) '{', (int) '}', (int) '[', (int) ']');
     private static final Set<Integer> ESCAPABLE = Set.of((int) '"', (int) '\\', (int) '/', (int) 'b', (int) 'f', (int) 'n', (int) 'r', (int) 't');
     private static final Set<String> BOOLEANS = Set.of("true", "false");
@@ -23,7 +22,7 @@ public final class Lexer extends StringReader {
     public Lexeme<?> nextLexeme() throws JsonException {
         if (this.canRead()) {
             var c = this.peek();
-            if (INDENTATION.contains(c)) {
+            if (StringReader.isWhitespace(c)) {
                 this.read();
                 return this.nextLexeme();
             }
@@ -45,7 +44,7 @@ public final class Lexer extends StringReader {
         this.pushStamp();
         while (this.canRead()) {
             var d = this.peek();
-            if (INDENTATION.contains(d) || SEPARATORS.contains(d) || d == '"')
+            if (StringReader.isWhitespace(d) || SEPARATORS.contains(d) || d == '"')
                 break;
             this.read();
         }

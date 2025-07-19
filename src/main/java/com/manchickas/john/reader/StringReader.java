@@ -38,6 +38,10 @@ public class StringReader {
         return StringReader.isDigit(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
     }
 
+    public static boolean isWhitespace(int c) {
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+    }
+
     public int peek() {
         return this.src.codePointAt(this.cursor);
     }

@@ -15,6 +15,7 @@ import com.manchickas.john.lexer.lexeme.LexemeType;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.util.ArrayBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
+import org.jetbrains.annotations.NotNull;
 
 public final class Parser {
 
@@ -26,6 +27,7 @@ public final class Parser {
         this.buffer = new ObjectArrayFIFOQueue<>(8);
     }
 
+    @NotNull
     public JsonElement parse() throws JsonException {
         var lexeme = this.peek();
         var span = lexeme.span();

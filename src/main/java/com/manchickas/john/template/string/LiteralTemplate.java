@@ -1,12 +1,11 @@
-package com.manchickas.john.template.string.type;
+package com.manchickas.john.template.string;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonString;
-import com.manchickas.john.template.string.StringTemplate;
 import com.manchickas.john.util.Result;
 import com.manchickas.john.template.Template;
 
-public final class LiteralTemplate implements StringTemplate {
+public final class LiteralTemplate implements Template<String> {
 
     private final String literal;
     private final boolean caseSensitive;
@@ -21,7 +20,10 @@ public final class LiteralTemplate implements StringTemplate {
         this.caseSensitive = caseSensitive;
     }
 
-    @Override
+    /**
+     * Returns a <b>case-insensitive</b> version of the current {@link LiteralTemplate}.
+     * @return a case-insensitive {@link LiteralTemplate}
+     */
     public Template<String> caseInsensitive() {
         return new LiteralTemplate(this.literal, false);
     }
@@ -37,12 +39,6 @@ public final class LiteralTemplate implements StringTemplate {
         return Result.mismatch();
     }
 
-    private boolean matches(String value) {
-        if (this.caseSensitive)
-            return value.equals(this.literal);
-        return value.equalsIgnoreCase(this.literal);
-    }
-
     @Override
     public Result<JsonElement> serialize(String value) {
         if (value.equals(this.literal))
@@ -53,5 +49,11 @@ public final class LiteralTemplate implements StringTemplate {
     @Override
     public String name() {
         return '"' + this.literal + '"';
+    }
+
+    private boolean matches(String value) {
+        if (this.caseSensitive)
+            return value.equals(this.literal);
+        return value.equalsIgnoreCase(this.literal);
     }
 }

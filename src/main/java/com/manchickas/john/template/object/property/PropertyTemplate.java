@@ -23,11 +23,13 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
     }
 
     /**
-     * Composes a {@link Template} that supplies the provided {@code other} value if the required
-     * property was not present on the {@link JsonObject} altogether.
-     *
-     * @param other the default value.
-     * @return a {@link Template} that represents the optional operation.
+     * Composes a {@link Template} that supplies the provided {@code other} value if the necessary property isn't
+     * present on the object.
+     * <br><br>
+     * The composed {@link Template} effectively never mismatches on {@link #parse(JsonElement)} operations.
+     * @param other the default value to supply.
+     * @return a {@link Template} that yields the current template's value, or {@code other} if the property wasn't present.
+     * @since 1.0.0
      */
     @Override
     public abstract PropertyTemplate<Instance, T> orElse(T other);

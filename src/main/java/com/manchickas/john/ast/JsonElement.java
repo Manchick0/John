@@ -81,7 +81,7 @@ public abstract class JsonElement {
      * when processed, can easily be turned into the JSON representation by following a set of simple
      * sequential substitutions.
      * <br><br>
-     * The pattern is used internally by the {@link John#stringify(JsonElement, int)} method,
+     * The pattern is used internally by the {@link John#stringifyPattern(String, int)} method,
      * and it's thus referred to as the <b>stringify pattern</b>.
      * <br><br>
      *

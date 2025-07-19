@@ -25,7 +25,7 @@ public final class JsonObject extends JsonElement {
         var i = 0;
         for (var entry : this.elements.entrySet()) {
             if (i++ > 0)
-                builder.append(",\\s\\n");
+                builder.append(",\\n");
             var key = entry.getKey();
             var value = entry.getValue();
             builder.append('"')

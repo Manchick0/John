@@ -10,7 +10,7 @@ public record SourceSpan(String sourceLine, int line, int start, int end) {
     private static final String RESET = "\u001B[0m";
 
     public static SourceSpan lineWide(String sourceLine, int line) {
-        return new SourceSpan(sourceLine, line, 0, sourceLine.length() - 1);
+        return new SourceSpan(sourceLine, line, 1, sourceLine.length());
     }
 
     public static SourceSpan charWide(String sourceLine, int line, int column) {

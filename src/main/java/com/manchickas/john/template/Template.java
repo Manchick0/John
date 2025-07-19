@@ -1,9 +1,10 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.template.object.constructor.*;
+import com.manchickas.john.template.object.type.*;
 import com.manchickas.john.template.union.UnionTemplate;
 import com.manchickas.john.ast.primitive.JsonBoolean;
-import com.manchickas.john.ast.primitive.JsonNull;
 import com.manchickas.john.ast.primitive.JsonNumber;
 import com.manchickas.john.ast.primitive.JsonString;
 import com.manchickas.john.position.SourceSpan;
@@ -13,22 +14,15 @@ import com.manchickas.john.template.number.type.MinTemplate;
 import com.manchickas.john.template.number.NumericTemplate;
 import com.manchickas.john.template.number.type.RangeTemplate;
 import com.manchickas.john.template.object.DiscriminatedUnionTemplate;
-import com.manchickas.john.template.object.constructor.BiConstructor;
-import com.manchickas.john.template.object.constructor.TetraConstructor;
-import com.manchickas.john.template.object.constructor.TriConstructor;
-import com.manchickas.john.template.object.constructor.UniConstructor;
 import com.manchickas.john.template.object.property.PropertyAccessor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.object.property.type.RequiredPropertyTemplate;
-import com.manchickas.john.template.object.type.BiRecordTemplate;
-import com.manchickas.john.template.object.type.TetraRecordTemplate;
-import com.manchickas.john.template.object.type.TriRecordTemplate;
-import com.manchickas.john.template.object.type.UniRecordTemplate;
-import com.manchickas.john.template.string.type.LiteralTemplate;
-import com.manchickas.john.template.string.type.PatternTemplate;
-import com.manchickas.john.template.string.StringTemplate;
+import com.manchickas.john.template.string.LiteralTemplate;
+import com.manchickas.john.template.string.PatternTemplate;
 import com.manchickas.john.util.Result;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -55,25 +49,7 @@ public interface Template<T> {
      *
      * @since 1.0.0
      */
-    NullTemplate NULL = new NullTemplate() {
-
-        @Override
-        public Result<Void> parse(JsonElement element) {
-            if (element instanceof JsonNull)
-                return Result.success(null);
-            return Result.mismatch();
-        }
-
-        @Override
-        public Result<JsonElement> serialize(Void value) {
-            return Result.success(null);
-        }
-
-        @Override
-        public String name() {
-            return "null";
-        }
-    };
+    NullTemplate NULL = new NullTemplate();
 
     /**
      * Represents a {@link Template} that matches all JSON elements.
@@ -103,12 +79,7 @@ public interface Template<T> {
      *
      * @since 1.0.0
      */
-    StringTemplate STRING = new StringTemplate() {
-
-        @Override
-        public Template<String> caseInsensitive() {
-            return this;
-        }
+    Template<String> STRING = new Template<>() {
 
         @Override
         public Result<String> parse(JsonElement element) {
@@ -201,6 +172,7 @@ public interface Template<T> {
      * @param min the lower bound, inclusive.
      * @param max the upper bound, inclusive.
      * @return a {@link NumericTemplate} representing the specified range
+     * @since 1.0.0
      */
     static NumericTemplate range(Number min, Number max) {
         return new RangeTemplate(min, max);
@@ -211,6 +183,7 @@ public interface Template<T> {
      *
      * @param max the upper bound, inclusive.
      * @return a {@link NumericTemplate} representing the open range.
+     * @since 1.0.0
      */
     static NumericTemplate max(Number max) {
         return new MaxTemplate(max);
@@ -221,8 +194,10 @@ public interface Template<T> {
      *
      * @param min the lower bound, inclusive.
      * @return a {@link NumericTemplate} representing the open range.
+     * @since 1.0.0
      */
-    static NumericTemplate min(Number min) {
+    @Contract("_ -> new")
+    static @NotNull NumericTemplate min(Number min) {
         return new MinTemplate(min);
     }
 
@@ -231,8 +206,10 @@ public interface Template<T> {
      *
      * @param literal the literal to match, case-sensitive.
      * @return a {@link Template} representing the literal.
+     * @since 1.0.0
      */
-    static StringTemplate literal(String literal) {
+    @Contract(value = "_ -> new", pure = true)
+    static @NotNull LiteralTemplate literal(String literal) {
         return new LiteralTemplate(literal);
     }
 
@@ -240,8 +217,10 @@ public interface Template<T> {
      * Represents a {@link Template} that matches all strings that themselves match the provided regular expression.
      * @param regex the regular expression to match against.
      * @return a {@link Template} representing that {@link Pattern}
+     * @since 1.0.0
      */
-    static StringTemplate pattern(@Language("RegExp") String regex) {
+    @Contract("_ -> new")
+    static @NotNull Template<String> pattern(@Language("RegExp") String regex) {
         return Template.pattern(Pattern.compile(regex));
     }
 
@@ -250,7 +229,8 @@ public interface Template<T> {
      * @param pattern the {@link Pattern} to match against.
      * @return a {@link Template} representing that {@link Pattern}
      */
-    static StringTemplate pattern(Pattern pattern) {
+    @Contract(value = "_ -> new", pure = true)
+    static @NotNull Template<String> pattern(Pattern pattern) {
         return new PatternTemplate(pattern);
     }
 
@@ -266,49 +246,103 @@ public interface Template<T> {
      * @param <Instance> the supertype of all possible templates.
      * @param <Disc> the type of the discriminator property.
      */
-    static <Instance, Disc> Template<Instance> discriminatedUnion(PropertyTemplate<Instance, Disc> discriminator,
-                                                                  Function<Disc, Template<? extends Instance>> resolver) {
+    @Contract(value = "_, _ -> new", pure = true)
+    static <Instance, Disc> @NotNull Template<Instance> discriminatedUnion(PropertyTemplate<Instance, Disc> discriminator,
+                                                                           Function<Disc, Template<? extends Instance>> resolver) {
         return new DiscriminatedUnionTemplate<>(discriminator, resolver);
     }
 
-    static <Instance, A> Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                   UniConstructor<A, Instance> constructor) {
+    @Contract("_, _ -> new")
+    static <Instance, A> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                            UniConstructor<A, Instance> constructor) {
         return new UniRecordTemplate<>(first, constructor);
     }
 
-    static <Instance, A, B> Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                      PropertyTemplate<Instance, B> second,
-                                                      BiConstructor<A, B, Instance> constructor) {
+    @Contract("_, _, _ -> new")
+    static <Instance, A, B> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                               PropertyTemplate<Instance, B> second,
+                                                               BiConstructor<A, B, Instance> constructor) {
         return new BiRecordTemplate<>(first, second, constructor);
     }
 
-    static <Instance, A, B, C> Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                         PropertyTemplate<Instance, B> second,
-                                                         PropertyTemplate<Instance, C> third,
-                                                         TriConstructor<A, B, C, Instance> constructor) {
+    @Contract("_, _, _, _ -> new")
+    static <Instance, A, B, C> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                                  PropertyTemplate<Instance, B> second,
+                                                                  PropertyTemplate<Instance, C> third,
+                                                                  TriConstructor<A, B, C, Instance> constructor) {
         return new TriRecordTemplate<>(first, second, third, constructor);
     }
 
-    static <Instance, A, B, C, D> Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                            PropertyTemplate<Instance, B> second,
-                                                            PropertyTemplate<Instance, C> third,
-                                                            PropertyTemplate<Instance, D> fourth,
-                                                            TetraConstructor<A, B, C, D, Instance> constructor) {
+    @Contract("_, _, _, _, _ -> new")
+    static <Instance, A, B, C, D> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                                     PropertyTemplate<Instance, B> second,
+                                                                     PropertyTemplate<Instance, C> third,
+                                                                     PropertyTemplate<Instance, D> fourth,
+                                                                     TetraConstructor<A, B, C, D, Instance> constructor) {
         return new TetraRecordTemplate<>(first, second, third, fourth, constructor);
     }
 
+    @Contract("_, _, _, _, _, _ -> new")
+    static <Instance, A, B, C, D, E> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                                        PropertyTemplate<Instance, B> second,
+                                                                        PropertyTemplate<Instance, C> third,
+                                                                        PropertyTemplate<Instance, D> fourth,
+                                                                        PropertyTemplate<Instance, E> fifth,
+                                                                        PentaConstructor<A, B, C, D, E, Instance> constructor) {
+        return new PentaRecordTemplate<>(first, second, third, fourth, fifth, constructor);
+    }
+
+    @Contract("_, _, _, _, _, _, _ -> new")
+    static <Instance, A, B, C, D, E, F> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                                           PropertyTemplate<Instance, B> second,
+                                                                           PropertyTemplate<Instance, C> third,
+                                                                           PropertyTemplate<Instance, D> fourth,
+                                                                           PropertyTemplate<Instance, E> fifth,
+                                                                           PropertyTemplate<Instance, F> sixth,
+                                                                           HexaConstructor<A, B, C, D, E, F, Instance> constructor) {
+        return new HexaRecordTemplate<>(first, second, third, fourth, fifth, sixth, constructor);
+    }
+
+    @Contract("_, _, _, _, _, _, _, _ -> new")
+    static <Instance, A, B, C, D, E, F, G> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                                              PropertyTemplate<Instance, B> second,
+                                                                              PropertyTemplate<Instance, C> third,
+                                                                              PropertyTemplate<Instance, D> fourth,
+                                                                              PropertyTemplate<Instance, E> fifth,
+                                                                              PropertyTemplate<Instance, F> sixth,
+                                                                              PropertyTemplate<Instance, G> seventh,
+                                                                              HeptaConstructor<A, B, C, D, E, F, G, Instance> constructor) {
+        return new HeptaRecordTemplate<>(first, second, third, fourth, fifth, sixth, seventh, constructor);
+    }
+
+    @Contract("_, _, _, _, _, _, _, _, _ -> new")
+    static <Instance, A, B, C, D, E, F, G, H> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+                                                                                 PropertyTemplate<Instance, B> second,
+                                                                                 PropertyTemplate<Instance, C> third,
+                                                                                 PropertyTemplate<Instance, D> fourth,
+                                                                                 PropertyTemplate<Instance, E> fifth,
+                                                                                 PropertyTemplate<Instance, F> sixth,
+                                                                                 PropertyTemplate<Instance, G> seventh,
+                                                                                 PropertyTemplate<Instance, H> eighth,
+                                                                                 OctaConstructor<A, B, C, D, E, F, G, H, Instance> constructor) {
+        return new OctaRecordTemplate<>(first, second, third, fourth, fifth, sixth, seventh, eighth, constructor);
+    }
+
+
     /**
      * Represents a {@link Template} that behaves identically to the one returned by the provided {@code supplier}, but
-     * defers the initialization to its first usage.
+     * defers its initialization to the first usage.
      * <br><br>
-     * The underlying template gets initialized when either {@link #parse(JsonElement)} or {@link #serialize(Object)}
-     * gets invoked, memoizing the returned template afterward.
+     * The underlying template gets first initialized when either the {@link #parse(JsonElement)} or the {@link #serialize(Object)}
+     * method gets invoked, <b>memoizing</b> the returned template afterward.
      *
      * @param supplier the supplier of the underlying {@link Template}.
      * @return a {@link Template} that defers its initialization to the first usage.
      * @param <T> the type of the template.
+     * @since 1.0.0
      */
-    static <T> Template<T> lazy(Supplier<Template<T>> supplier) {
+    @Contract(value = "_ -> new", pure = true)
+    static <T> @NotNull Template<T> lazy(Supplier<Template<T>> supplier) {
         return new LazyTemplate<>(supplier);
     }
 
@@ -321,8 +355,10 @@ public interface Template<T> {
      *
      * @param <T> the type of the template.
      * @return a {@link Template} that always produces a mismatch.
+     * @since 1.0.0
      */
-    static <T> Template<T> never() {
+    @Contract(value = " -> new", pure = true)
+    static <T> @NotNull Template<T> never() {
         return new Template<>() {
 
             @Override
@@ -359,24 +395,38 @@ public interface Template<T> {
     }
 
     /**
-     * Attempts to parse the provided {@link JsonElement} against the template.
+     * Attempts to parse the provided {@link JsonElement}.
      *
      * @param element the element to parse.
-     * @return a {@link Result} representing the operation state.
+     * @return a {@link Result} representing the state of the operation.
      */
     Result<T> parse(JsonElement element);
+
+    /**
+     * Attempts to serialize the provided {@code value} back into a {@link JsonElement}.
+     * @param value the value to serialize.
+     * @return a {@link Result} representing the state of the operation.
+     */
     Result<JsonElement> serialize(T value);
+
+    /**
+     * Builds a descriptive name for the template.
+     *
+     * @return the string representation of the template.
+     */
     String name();
 
     /**
-     * Composes a {@link Template} that resolves to an array, the element type of which corresponds to that of the current template.
+     * Composes a {@link Template} that yields an array using the current template for every element in the array.
      * <br><br>
-     * In order for the template to match, <b>each</b> element must satisfy the current template.
+     * In order for the composed template to match, <b>each</b> element must satisfy the current template.
      *
      * @param factory the factory needed to create the resulting array with.
      * @return a {@link Template} representing an array equivalent of the template.
+     * @since 1.0.0
      */
-    default Template<T[]> array(IntFunction<T[]> factory) {
+    @Contract(value = "_ -> new", pure = true)
+    default @NotNull Template<T[]> array(IntFunction<T[]> factory) {
         return new ArrayTemplate<>(this, factory);
     }
 
@@ -389,11 +439,25 @@ public interface Template<T> {
      * @param accessor a {@link PropertyAccessor} that specifies how to access the property from an instance.
      * @return a {@link Template} representing the {@link PropertyTemplate}.
      * @param <Instance> the type on which the property can be accessed.
+     * @since 1.0.0
      */
     default <Instance> PropertyTemplate<Instance, T> property(String name, PropertyAccessor<Instance, T> accessor) {
         return new RequiredPropertyTemplate<>(name, this, accessor);
     }
 
+    /**
+     * Composes a {@link Template} that, if the current template could yield a value, transforms it using the provided {@code mapper} function.
+     * <br><br>
+     * During serialization, the composed {@link Template} transforms the value back to the one requested by the underlying template
+     * using the {@code remapper} function, and delegates the process back to it.
+     *
+     * @param mapper the function to use for forward transformation.
+     * @param remapper the function to use for backward transformation.
+     * @return a {@link Template} that transforms the current template's value.
+     * @param <V> the type of the composed template.
+     * @see #flatMap(Function, Function)
+     * @since 1.0.0
+     */
     default <V> Template<V> map(Function<T, V> mapper,
                                 Function<V, T> remapper) {
         return new Template<>() {
@@ -416,6 +480,20 @@ public interface Template<T> {
         };
     }
 
+    /**
+     * Composes a {@link Template} that, if the current template could yield a value, transforms it to a {@link Result} using the provided {@code mapper} function,
+     * which then represents the state of the operation.
+     * <br><br>
+     * During serialization, the composed {@link Template} transforms the value back to the one requested by the underlying template
+     * using the {@code remapper} function, and delegates the process back to it.
+     *
+     * @param mapper the function to use for forward transformation.
+     * @param remapper the function to use for backward transformation.
+     * @return a {@link Template} that transforms the current template's value.
+     * @param <V> the type of the composed template.
+     * @see #map(Function, Function)
+     * @since 1.0.0
+     */
     default <V> Template<V> flatMap(Function<T, Result<V>> mapper, 
                                     Function<V, T> remapper) {
         return new Template<>() {
@@ -438,6 +516,18 @@ public interface Template<T> {
         };
     }
 
+    /**
+     * Composes a {@link Template} that applies an additional validation step on top of the current template.
+     * <br><br>
+     * In order for the composed template to match, the underlying one has to match first, and the yielded value
+     * should then satisfy the provided {@code predicate}. If it doesn't, an error is raised with the result of the
+     * provided {@code message} supplier.
+     *
+     * @param predicate the predicate to validate the value against.
+     * @param message the supplier of the error message.
+     * @return a {@link Template} that yields the current template's value, if it satisfies the given predicate; otherwise, errors with the supplied error message.
+     * @since 1.0.0
+     */
     default Template<T> refine(Predicate<T> predicate, Supplier<String> message) {
         return new Template<>() {
 
@@ -473,11 +563,13 @@ public interface Template<T> {
     }
 
     /**
-     * Composes a {@link Template} that supplies a default {@code other} value if the underlying template couldn't produce a value itself.
+     * Composes a {@link Template} that supplies the provided {@code other} value if the current template
+     * couldn't yield one itself.
      * <br><br>
-     * The composed {@link Template} effectively never mismatches for {@link #parse(JsonElement)} operations.
+     * The composed {@link Template} effectively never mismatches on {@link #parse(JsonElement)} operations.
      * @param other the default value to supply.
-     * @return
+     * @return a {@link Template} that yields the current template's value, or {@code other} if none was produced.
+     * @since 1.0.0
      */
     default Template<T> orElse(T other) {
         return new Template<>() {
