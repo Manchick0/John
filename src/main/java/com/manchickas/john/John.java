@@ -4,7 +4,6 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.parser.Parser;
-import com.manchickas.john.path.JsonPath;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.reader.StringReader;
 import com.manchickas.john.template.Template;
