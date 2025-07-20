@@ -3,8 +3,8 @@ package com.manchickas.john.lexer.lexeme;
 import java.util.Optional;
 
 public interface LexemeType<T> {
-
     LexemeType<Character> SEPARATOR = new LexemeType<>() {
+
 
         @Override
         public Optional<Character> parse(Object obj) {

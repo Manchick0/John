@@ -19,6 +19,8 @@ import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.object.property.type.RequiredPropertyTemplate;
 import com.manchickas.john.template.string.LiteralTemplate;
 import com.manchickas.john.template.string.PatternTemplate;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +70,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(IntSet encountered) {
             return "any";
         }
     };
@@ -93,7 +95,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(IntSet encountered) {
             return "string";
         }
     };
@@ -118,7 +120,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(IntSet encountered) {
             return "number";
         }
     };
@@ -144,7 +146,7 @@ public interface Template<T> {
         }
 
         @Override
-        public String name() {
+        public String name(IntSet encountered) {
             return "boolean";
         }
     };
@@ -332,8 +334,8 @@ public interface Template<T> {
      * Represents a {@link Template} that behaves identically to the one returned by the provided {@code supplier}, but
      * defers its initialization to the first usage.
      * <br><br>
-     * The underlying template gets first initialized when either the {@link #parse(JsonElement)} or the {@link #serialize(Object)}
-     * method gets invoked, <b>memoizing</b> the returned template afterward.
+     * The underlying template gets first initialized when either the {@link #parse(JsonElement)} the {@link #serialize(Object)},
+     * the {@link #name(IntSet)} or the {@link Object#hashCode()} method gets invoked, <b>memoizing</b> the returned template afterward.
      *
      * @param supplier the supplier of the underlying {@link Template}.
      * @return a {@link Template} that defers its initialization to the first usage.
@@ -371,7 +373,7 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
+            public String name(IntSet encountered) {
                 return "never";
             }
         };
@@ -379,12 +381,12 @@ public interface Template<T> {
 
     default Result<T> parseAndPromote(JsonElement element) {
         return this.parse(element).promoteMismatch("Expected a value that would satisfy the template of type '%s'"
-                .formatted(this.name()), element.span());
+                .formatted(this.name(new IntOpenHashSet())), element.span());
     }
 
     default Result<JsonElement> serializeAndPromote(T value) {
         return this.serialize(value).promoteMismatch("Expected a value that would satisfy the template of type '%s'"
-                .formatted(this.name()), SourceSpan.lineWide(value.toString(), 1));
+                .formatted(this.name(new IntOpenHashSet())), SourceSpan.lineWide(value.toString(), 1));
     }
 
     /**
@@ -407,7 +409,7 @@ public interface Template<T> {
      *
      * @return the string representation of the template.
      */
-    String name();
+    String name(IntSet encountered);
 
     /**
      * Composes a {@link Template} that yields an array using the current template for every element in the array.
@@ -467,8 +469,13 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name();
+            public String name(IntSet encountered) {
+                return Template.this.name(encountered);
+            }
+
+            @Override
+            public int hashCode() {
+                return Template.this.hashCode();
             }
         };
     }
@@ -503,8 +510,13 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name();
+            public String name(IntSet encountered) {
+                return Template.this.name(encountered);
+            }
+
+            @Override
+            public int hashCode() {
+                return Template.this.hashCode();
             }
         };
     }
@@ -549,8 +561,13 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name();
+            public String name(IntSet encountered) {
+                return Template.this.name(encountered);
+            }
+
+            @Override
+            public int hashCode() {
+                return Template.this.hashCode();
             }
         };
     }
@@ -584,8 +601,13 @@ public interface Template<T> {
             }
 
             @Override
-            public String name() {
-                return Template.this.name() + '?';
+            public String name(IntSet encountered) {
+                return Template.this.name(encountered) + '?';
+            }
+
+            @Override
+            public int hashCode() {
+                return Template.this.hashCode();
             }
         };
     }

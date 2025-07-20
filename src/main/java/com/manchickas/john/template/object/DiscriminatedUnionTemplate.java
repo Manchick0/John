@@ -5,6 +5,7 @@ import com.manchickas.john.ast.JsonObject;
 import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.function.Function;
 
@@ -55,7 +56,7 @@ public final class DiscriminatedUnionTemplate<Disc, Instance> implements Templat
     }
 
     @Override
-    public String name() {
-        return "{ " + this.discriminator.name() + ", ... }";
+    public String name(IntSet encountered) {
+        return "{ " + this.discriminator.name(encountered) + ", ... }";
     }
 }

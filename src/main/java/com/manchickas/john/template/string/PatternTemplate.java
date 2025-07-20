@@ -4,6 +4,7 @@ import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonString;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.regex.Pattern;
 
@@ -36,7 +37,7 @@ public final class PatternTemplate implements Template<String> {
     }
 
     @Override
-    public String name() {
+    public String name(IntSet encountered) {
         return this.pattern.toString();
     }
 }

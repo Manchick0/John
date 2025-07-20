@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.Set;
 
@@ -36,13 +37,13 @@ public final class UnionTemplate<T> implements Template<T> {
     }
 
     @Override
-    public String name() {
+    public String name(IntSet encountered) {
         var builder = new StringBuilder();
         var i = 0;
         for (var template : this.templates) {
             if (i++ > 0)
                 builder.append(" | ");
-            builder.append(template.name());
+            builder.append(template.name(encountered));
         }
         return builder.toString();
     }

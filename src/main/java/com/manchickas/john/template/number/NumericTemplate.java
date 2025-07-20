@@ -4,6 +4,7 @@ import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public interface NumericTemplate extends Template<Number> {
 
@@ -32,8 +33,8 @@ public interface NumericTemplate extends Template<Number> {
             }
 
             @Override
-            public String name() {
-                return NumericTemplate.this.name();
+            public String name(IntSet encountered) {
+                return NumericTemplate.this.name(encountered);
             }
         };
     }

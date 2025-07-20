@@ -7,6 +7,7 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.Template;
 import com.manchickas.john.template.Result;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public abstract class PropertyTemplate<Instance, T> implements Template<T> {
 
@@ -61,8 +62,8 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
     }
 
     @Override
-    public String name() {
-        return this.property + ": " + this.template.name();
+    public String name(IntSet encountered) {
+        return this.property + ": " + this.template.name(encountered);
     }
 
     public T access(Instance instance) {

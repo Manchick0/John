@@ -2,6 +2,7 @@ package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonNull;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class NullTemplate implements Template<Void> {
 
@@ -32,7 +33,7 @@ public final class NullTemplate implements Template<Void> {
     }
 
     @Override
-    public String name() {
+    public String name(IntSet encountered) {
         return "null";
     }
 }

@@ -6,6 +6,7 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
 import com.manchickas.john.util.ArrayBuilder;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.function.IntFunction;
 
@@ -58,7 +59,7 @@ public final class ArrayTemplate<T> implements Template<T[]> {
     }
 
     @Override
-    public String name() {
-        return this.template.name() + "[]";
+    public String name(IntSet encountered) {
+        return this.template.name(encountered) + "[]";
     }
 }

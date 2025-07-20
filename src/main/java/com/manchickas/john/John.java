@@ -4,6 +4,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.parser.Parser;
+import com.manchickas.john.path.JsonPath;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.reader.StringReader;
 import com.manchickas.john.template.Template;
@@ -24,20 +25,6 @@ import java.nio.file.Path;
 public final class John {
 
     private John() {}
-
-    public static void main(String[] args) {
-        try {
-            var source = """
-                    {
-                        "baz": "world"
-                    }
-            """;
-            var json = John.parse(source);
-            System.out.println(json.get("./baz", Template.STRING));
-        } catch (JsonException e) {
-            System.err.println(e.getMessage(true));
-        }
-    }
 
     /**
      * Attempts to parse the provided {@code source} into an arbitrary {@link JsonElement}.

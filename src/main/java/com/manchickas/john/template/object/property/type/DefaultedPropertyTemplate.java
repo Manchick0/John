@@ -5,6 +5,7 @@ import com.manchickas.john.template.Template;
 import com.manchickas.john.template.object.property.PropertyAccessor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class DefaultedPropertyTemplate<Instance, T> extends PropertyTemplate<Instance, T> {
 
@@ -34,7 +35,7 @@ public final class DefaultedPropertyTemplate<Instance, T> extends PropertyTempla
     }
 
     @Override
-    public String name() {
-        return this.property + "?: " + this.template.name();
+    public String name(IntSet encountered) {
+        return this.property + "?: " + this.template.name(encountered);
     }
 }

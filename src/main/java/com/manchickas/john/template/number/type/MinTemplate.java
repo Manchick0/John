@@ -4,6 +4,7 @@ import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonNumber;
 import com.manchickas.john.template.number.NumericTemplate;
 import com.manchickas.john.template.Result;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class MinTemplate implements NumericTemplate {
 
@@ -32,7 +33,7 @@ public final class MinTemplate implements NumericTemplate {
     }
 
     @Override
-    public String name() {
+    public String name(IntSet encountered) {
         return this.min + "..";
     }
 }

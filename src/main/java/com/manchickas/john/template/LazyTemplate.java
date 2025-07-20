@@ -1,6 +1,7 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -29,8 +30,9 @@ public final class LazyTemplate<T> implements Template<T> {
     }
 
     @Override
-    public String name() {
-        return ">...";
+    public String name(IntSet encountered) {
+        return this.getOrCache()
+                .name(encountered);
     }
 
     private Template<T> getOrCache() {
@@ -41,5 +43,10 @@ public final class LazyTemplate<T> implements Template<T> {
             }
         }
         return this.cached;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getOrCache().hashCode();
     }
 }

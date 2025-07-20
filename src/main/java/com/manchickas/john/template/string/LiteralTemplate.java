@@ -4,6 +4,7 @@ import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonString;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class LiteralTemplate implements Template<String> {
 
@@ -47,7 +48,7 @@ public final class LiteralTemplate implements Template<String> {
     }
 
     @Override
-    public String name() {
+    public String name(IntSet encountered) {
         return '"' + this.literal + '"';
     }
 

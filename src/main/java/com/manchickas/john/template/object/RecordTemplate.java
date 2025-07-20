@@ -6,6 +6,7 @@ import com.manchickas.john.ast.JsonObject;
 import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.List;
 
@@ -25,17 +26,20 @@ public abstract class RecordTemplate<Instance> implements Template<Instance> {
     }
 
     @Override
-    public String name() {
-        var builder = new StringBuilder("{ ");
-        var props = this.properties();
-        for (var i = 0; i < props.size(); i++) {
-            var property = props.get(i);
-            if (i > 0)
-                builder.append(", ");
-            builder.append(property.name());
+    public String name(IntSet encountered) {
+        if (encountered.add(this.hashCode())) {
+            var builder = new StringBuilder("{ ");
+            var props = this.properties();
+            for (var i = 0; i < props.size(); i++) {
+                var property = props.get(i);
+                if (i > 0)
+                    builder.append(", ");
+                builder.append(property.name(encountered));
+            }
+            return builder.append(" }")
+                    .toString();
         }
-        return builder.append(" }")
-                .toString();
+        return ">...";
     }
 
     protected abstract List<PropertyTemplate<Instance, ?>> properties();

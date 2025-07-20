@@ -92,6 +92,15 @@ It's worth noting that John keeps track of _source spans_, the source locations 
 (2:16-17) Encountered an unknown escape sequence '\w'.
 ```
 
+[Templates](#templates) also benefit from this implicit source tracking, producing most error messages with the source attached.
+
+```
+"Hello!"
+^^^^^^^^
+(1:1-8) Expected a value that would satisfy the template of type '{ name: string, age: 18.0..65.0, friends?: >...[] }'
+```
+
+
 <a name="templates"></a>
 ## Templates 🗞️
 
