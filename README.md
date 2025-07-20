@@ -1,4 +1,5 @@
 # John 👴
+![Maven Central](https://img.shields.io/badge/Maven-Central-F18900?style=flat&logo=sonatype&link=https%3A%2F%2Fcentral.sonatype.com%2Fartifact%2Fcom.manchickas%2Fjohn)
 
 > Perhaps the most modern and declarative JSON library Java has to offer.
 
@@ -24,8 +25,9 @@ To invite your new _co-worker_ to your project, include the following lines in y
 </dependency>
 ```
 
-> [!TIP]
-> Replace `1.0.0` with the latest version from Maven Central.
+> ```kts
+> implementation("com.manchickas:john:1.0.0")
+> ```
 
 ```java
 public static void main(String[] args) {
