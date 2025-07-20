@@ -1,5 +1,5 @@
 # John 👴
-![Maven Central](https://img.shields.io/badge/Maven-Central-F18900?style=flat&logo=sonatype&link=https%3A%2F%2Fcentral.sonatype.com%2Fartifact%2Fcom.manchickas%2Fjohn)
+[![Maven Central](https://img.shields.io/badge/Maven-Central-F18900?style=flat&logo=sonatype&link=https%3A%2F%2Fcentral.sonatype.com%2Fartifact%2Fcom.manchickas%2Fjohn)](https://central.sonatype.com/artifact/com.manchickas/john)
 
 > Perhaps the most modern and declarative JSON library Java has to offer.
 
