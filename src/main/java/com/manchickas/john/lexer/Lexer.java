@@ -4,6 +4,7 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.lexer.lexeme.Lexeme;
 import com.manchickas.john.lexer.lexeme.LexemeType;
 import com.manchickas.john.reader.StringReader;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
@@ -11,7 +12,15 @@ import java.util.Set;
 public final class Lexer extends StringReader {
 
     private static final Set<Integer> SEPARATORS = Set.of((int) ',', (int) ':', (int) '{', (int) '}', (int) '[', (int) ']');
-    private static final Set<Integer> ESCAPABLE = Set.of((int) '"', (int) '\\', (int) '/', (int) 'b', (int) 'f', (int) 'n', (int) 'r', (int) 't');
+    private static final Int2IntMap ESCAPABLE = Int2IntMap.ofEntries(
+            Int2IntMap.entry('"', '"'),
+            Int2IntMap.entry('\\', '\\'),
+            Int2IntMap.entry('b', '\b'),
+            Int2IntMap.entry('f', '\f'),
+            Int2IntMap.entry('n', '\n'),
+            Int2IntMap.entry('r', '\r'),
+            Int2IntMap.entry('t', '\t')
+    );
     private static final Set<String> BOOLEANS = Set.of("true", "false");
 
     public Lexer(String source) {
@@ -117,8 +126,9 @@ public final class Lexer extends StringReader {
                     builder.append(this.readHexCharacter());
                     continue;
                 }
-                if (ESCAPABLE.contains(escape)) {
-                    builder.appendCodePoint(escape);
+                if (ESCAPABLE.containsKey(escape)) {
+                    var escaped = ESCAPABLE.get(escape);
+                    builder.appendCodePoint(escaped);
                     continue;
                 }
                 throw new JsonException("Encountered an unknown escape sequence '\\%c'.", escape)
