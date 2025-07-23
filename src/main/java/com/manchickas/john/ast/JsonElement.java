@@ -139,6 +139,16 @@ public abstract class JsonElement {
      */
     public abstract String stringifyPattern();
 
+    /**
+     * Returns the {@code length} of the element.
+     * <br><br>
+     * The {@code length} is an abstract concept that depends on the specific implementation. {@link com.manchickas.john.ast.primitive.JsonPrimitive JsonPrimitives}s
+     * always have a length of {@code 1}, {@link JsonArray}s return their actual length, and {@link JsonObject}s — their underlying size.
+     *
+     * @return the length of the element.
+     */
+    public abstract int length();
+
     @Nullable
     public SourceSpan span() {
         return this.span;

@@ -6,6 +6,9 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.Set;
+
 public final class JsonObject extends JsonElement {
 
     private final ImmutableMap<String, JsonElement> elements;
@@ -47,6 +50,15 @@ public final class JsonObject extends JsonElement {
             return el;
         throw new JsonException("Expected the object to include '%s' as a property.", name)
                 .withSpan(this.span);
+    }
+
+    @Override
+    public int length() {
+        return this.elements.size();
+    }
+
+    public Set<Map.Entry<String, JsonElement>> entries() {
+        return this.elements.entrySet();
     }
 
     public JsonObject with(String name, JsonElement value) {

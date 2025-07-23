@@ -1,6 +1,7 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.template.object.MapTemplate;
 import com.manchickas.john.template.object.constructor.*;
 import com.manchickas.john.template.object.type.*;
 import com.manchickas.john.template.union.UnionTemplate;
@@ -25,6 +26,7 @@ import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -251,6 +253,18 @@ public interface Template<T> {
     static <Instance, Disc> @NotNull Template<Instance> discriminatedUnion(PropertyTemplate<Instance, Disc> discriminator,
                                                                            Function<Disc, Template<? extends Instance>> resolver) {
         return new DiscriminatedUnionTemplate<>(discriminator, resolver);
+    }
+
+    /**
+     * Represents a {@link Template} that matches any <b>arbitrary-keyed</b> JSON object, as long as each entry
+     * of the object satisfies the provided {@code template}.
+     *
+     * @param template the template of an entry.
+     * @return a {@link Template} representing the map.
+     * @param <T> the type of the template.
+     */
+    static <T> Template<Map<String, T>> map(Template<T> template) {
+        return new MapTemplate<>(template);
     }
 
     @Contract("_, _ -> new")

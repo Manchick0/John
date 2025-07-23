@@ -45,6 +45,7 @@ public final class JsonArray extends JsonElement {
         throw new JsonException("Attempted to access an element at index '%d' of a JSON array.", index);
     }
 
+    @Override
     public int length() {
         return this.elements.length;
     }

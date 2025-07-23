@@ -10,5 +10,10 @@ public abstract class JsonPrimitive<T> extends JsonElement {
         super(span);
     }
 
+    @Override
+    public int length() {
+        return 1;
+    }
+
     public abstract T value();
 }
