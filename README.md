@@ -26,7 +26,7 @@ To invite your new _co-worker_ to your project, include the following lines in y
 ```
 
 > ```kts
-> implementation("com.manchickas:john:1.0.0")
+> implementation("com.manchickas:john:1.2.0")
 > ```
 
 ```java
