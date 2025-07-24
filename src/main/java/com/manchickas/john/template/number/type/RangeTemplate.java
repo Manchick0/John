@@ -29,9 +29,12 @@ public final class RangeTemplate implements NumericTemplate {
 
     @Override
     public Result<JsonElement> serialize(Number value) {
-        var val = value.doubleValue();
-        if (val >= this.min && val <= this.max)
-            return Result.success(new JsonNumber(value));
+        if (value != null) {
+            var val = value.doubleValue();
+            if (val >= this.min && val <= this.max)
+                return Result.success(new JsonNumber(value));
+            return Result.mismatch();
+        }
         return Result.mismatch();
     }
 

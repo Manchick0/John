@@ -46,16 +46,19 @@ public final class ArrayTemplate<T> implements Template<T[]> {
 
     @Override
     public Result<JsonElement> serialize(T[] value) {
-        var builder = ArrayBuilder.<JsonElement>builderWithExpectedSize(value.length);
-        for (var v : value) {
-            var result = this.template.serialize(v);
-            if (result.isSuccess()) {
-                builder.append(result.unwrap());
-                continue;
+        if (value != null) {
+            var builder = ArrayBuilder.<JsonElement>builderWithExpectedSize(value.length);
+            for (var v : value) {
+                var result = this.template.serialize(v);
+                if (result.isSuccess()) {
+                    builder.append(result.unwrap());
+                    continue;
+                }
+                return result;
             }
-            return result;
+            return Result.success(new JsonArray(builder.build(JsonElement[]::new)));
         }
-        return Result.success(new JsonArray(builder.build(JsonElement[]::new)));
+        return Result.mismatch();
     }
 
     @Override

@@ -1,14 +1,14 @@
 package com.manchickas.john.template.object.property.type;
 
 import com.manchickas.john.position.SourceSpan;
-import com.manchickas.john.template.object.property.PropertyAccessor;
-import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import com.manchickas.john.template.object.property.PropertyAccessor;
+import com.manchickas.john.template.object.property.PropertyTemplate;
 
-public final class RequiredPropertyTemplate<Instance, T> extends PropertyTemplate<Instance, T> {
+public class OptionalPropertyTemplate<Instance, T> extends PropertyTemplate<Instance, T> {
 
-    public RequiredPropertyTemplate(String property,
+    public OptionalPropertyTemplate(String property,
                                     Template<T> template,
                                     PropertyAccessor<Instance, T> accessor) {
         super(property, template, accessor);
@@ -26,21 +26,16 @@ public final class RequiredPropertyTemplate<Instance, T> extends PropertyTemplat
 
     @Override
     public PropertyTemplate<Instance, T> optional() {
-        return new OptionalPropertyTemplate<>(
-                this.property,
-                this.template,
-                this.accessor
-        );
-    }
-
-    @Override
-    protected boolean omitNulls() {
-        return false;
+        return this;
     }
 
     @Override
     protected Result<T> missingResult(SourceSpan span) {
-        return Result.error("Expected the object to include '%s' as a property."
-                .formatted(this.property), span);
+        return Result.success(null);
+    }
+
+    @Override
+    protected boolean omitNulls() {
+        return true;
     }
 }

@@ -26,10 +26,13 @@ public interface NumericTemplate extends Template<Number> {
 
             @Override
             public Result<JsonElement> serialize(Number value) {
-                if (value.doubleValue() % 1 == 0)
-                    return NumericTemplate.this.serialize(value);
-                return Result.error("Expected the number to not include a fractional part.",
-                        SourceSpan.lineWide(value.toString(), 1));
+                if (value != null) {
+                    if (value.doubleValue() % 1 == 0)
+                        return NumericTemplate.this.serialize(value);
+                    return Result.error("Expected the number to not include a fractional part.",
+                            SourceSpan.lineWide(value.toString(), 1));
+                }
+                return Result.mismatch();
             }
 
             @Override

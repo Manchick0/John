@@ -14,15 +14,21 @@ public abstract class RecordTemplate<Instance> implements Template<Instance> {
 
     @Override
     public Result<JsonElement> serialize(Instance value) {
-        var props = this.properties();
-        var builder = ImmutableMap.<String, JsonElement>builderWithExpectedSize(props.size());
-        for (var property : props) {
-            var result = property.serializeProperty(value);
-            if (result.isError())
-                return result;
-            builder.put(property.property(), result.unwrap());
+        if (value != null) {
+            var props = this.properties();
+            var builder = ImmutableMap.<String, JsonElement>builderWithExpectedSize(props.size());
+            for (var property : props) {
+                var prop = property.serializeProperty(value);
+                if (prop.isPresent()) {
+                    var result = prop.get();
+                    if (result.isError())
+                        return result;
+                    builder.put(property.property(), result.unwrap());
+                }
+            }
+            return Result.success(new JsonObject(builder.build()));
         }
-        return Result.success(new JsonObject(builder.build()));
+        return Result.mismatch();
     }
 
     @Override

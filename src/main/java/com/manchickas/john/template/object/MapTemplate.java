@@ -39,16 +39,19 @@ public final class MapTemplate<T> implements Template<Map<String, T>> {
 
     @Override
     public Result<JsonElement> serialize(Map<String, T> map) {
-        var builder = ImmutableMap.<String, JsonElement>builderWithExpectedSize(map.size());
-        for (var entry : map.entrySet()) {
-            var key = entry.getKey();
-            var value = entry.getValue();
-            var result = this.template.serializeAndPromote(value);
-            if (result.isError())
-                return result;
-            builder.put(key, result.unwrap());
+        if (map != null) {
+            var builder = ImmutableMap.<String, JsonElement>builderWithExpectedSize(map.size());
+            for (var entry : map.entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue();
+                var result = this.template.serializeAndPromote(value);
+                if (result.isError())
+                    return result;
+                builder.put(key, result.unwrap());
+            }
+            return Result.success(new JsonObject(builder.build()));
         }
-        return Result.success(new JsonObject(builder.build()));
+        return Result.mismatch();
     }
 
     @Override

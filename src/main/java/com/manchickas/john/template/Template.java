@@ -1,6 +1,7 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.ast.primitive.JsonNull;
 import com.manchickas.john.template.object.MapTemplate;
 import com.manchickas.john.template.object.constructor.*;
 import com.manchickas.john.template.object.type.*;
@@ -25,6 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -231,6 +233,7 @@ public interface Template<T> {
      * Represents a {@link Template} that matches all strings that themselves match the provided precompiled {@link Pattern}.
      * @param pattern the {@link Pattern} to match against.
      * @return a {@link Template} representing that {@link Pattern}
+     * @since 1.0.0
      */
     @Contract(value = "_ -> new", pure = true)
     static @NotNull Template<String> pattern(Pattern pattern) {
@@ -248,6 +251,7 @@ public interface Template<T> {
      * @return a {@link Template} representing the discriminated union.
      * @param <Instance> the supertype of all possible templates.
      * @param <Disc> the type of the discriminator property.
+     * @since 1.0.0
      */
     @Contract(value = "_, _ -> new", pure = true)
     static <Instance, Disc> @NotNull Template<Instance> discriminatedUnion(PropertyTemplate<Instance, Disc> discriminator,
@@ -262,6 +266,7 @@ public interface Template<T> {
      * @param template the template of an entry.
      * @return a {@link Template} representing the map.
      * @param <T> the type of the template.
+     * @since 1.1.0
      */
     static <T> Template<Map<String, T>> map(Template<T> template) {
         return new MapTemplate<>(template);
@@ -408,6 +413,7 @@ public interface Template<T> {
      *
      * @param element the element to parse.
      * @return a {@link Result} representing the state of the operation.
+     * @since 1.0.0
      */
     Result<T> parse(JsonElement element);
 
@@ -415,13 +421,15 @@ public interface Template<T> {
      * Attempts to serialize the provided {@code value} back into a {@link JsonElement}.
      * @param value the value to serialize.
      * @return a {@link Result} representing the state of the operation.
+     * @since 1.0.0
      */
-    Result<JsonElement> serialize(T value);
+    Result<JsonElement> serialize(@Nullable T value);
 
     /**
      * Builds a descriptive name for the template.
      *
      * @return the string representation of the template.
+     * @since 1.0.0
      */
     String name(IntSet encountered);
 
@@ -612,6 +620,46 @@ public interface Template<T> {
                 if (result.isSuccess())
                     return result;
                 return Template.this.serialize(other);
+            }
+
+            @Override
+            public String name(IntSet encountered) {
+                return Template.this.name(encountered) + "??";
+            }
+
+            @Override
+            public int hashCode() {
+                return Template.this.hashCode();
+            }
+        };
+    }
+
+    /**
+     * Composes a {@link Template} that, if the current template doesn't yield a value itself, matches on {@code null} values.
+     *
+     * @return a {@link Template} that yields the current template's value, or {@code null} if the value is {@code null}.
+     */
+    default Template<T> optional() {
+        return new Template<>() {
+
+            @Override
+            public Result<T> parse(JsonElement element) {
+                var result = Template.this.parse(element);
+                if (result.isSuccess())
+                    return result;
+                if (element instanceof JsonNull)
+                    return Result.success(null);
+                return Result.mismatch();
+            }
+
+            @Override
+            public Result<JsonElement> serialize(@Nullable T value) {
+                var result = Template.this.serialize(value);
+                if (result.isSuccess())
+                    return result;
+                if (value == null || value instanceof JsonNull)
+                    return Result.success(new JsonNull());
+                return Result.mismatch();
             }
 
             @Override

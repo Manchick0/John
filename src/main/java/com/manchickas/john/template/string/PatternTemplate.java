@@ -30,9 +30,12 @@ public final class PatternTemplate implements Template<String> {
 
     @Override
     public Result<JsonElement> serialize(String value) {
-        var matcher = this.pattern.matcher(value);
-        if (matcher.matches())
-            return Result.success(new JsonString(value));
+        if (value != null) {
+            var matcher = this.pattern.matcher(value);
+            if (matcher.matches())
+                return Result.success(new JsonString(value));
+            return Result.mismatch();
+        }
         return Result.mismatch();
     }
 

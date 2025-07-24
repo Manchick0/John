@@ -30,8 +30,22 @@ public final class DefaultedPropertyTemplate<Instance, T> extends PropertyTempla
     }
 
     @Override
+    public PropertyTemplate<Instance, T> optional() {
+        return new OptionalPropertyTemplate<>(
+                this.property,
+                this.template,
+                this.accessor
+        );
+    }
+
+    @Override
     protected Result<T> missingResult(SourceSpan span) {
         return Result.success(this.other);
+    }
+
+    @Override
+    protected boolean omitNulls() {
+        return false;
     }
 
     @Override

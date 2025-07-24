@@ -27,8 +27,11 @@ public final class MaxTemplate implements NumericTemplate {
 
     @Override
     public Result<JsonElement> serialize(Number value) {
-        if (value.doubleValue() <= this.max)
-            return Result.success(new JsonNumber(value));
+        if (value != null) {
+            if (value.doubleValue() <= this.max)
+                return Result.success(new JsonNumber(value));
+            return Result.mismatch();
+        }
         return Result.mismatch();
     }
 

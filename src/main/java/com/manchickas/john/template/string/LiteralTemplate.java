@@ -42,8 +42,11 @@ public final class LiteralTemplate implements Template<String> {
 
     @Override
     public Result<JsonElement> serialize(String value) {
-        if (value.equals(this.literal))
-            return Result.success(new JsonString(this.literal));
+        if (value != null) {
+            if (value.equals(this.literal))
+                return Result.success(new JsonString(this.literal));
+            return Result.mismatch();
+        }
         return Result.mismatch();
     }
 

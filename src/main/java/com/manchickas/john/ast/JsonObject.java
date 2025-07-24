@@ -1,7 +1,6 @@
 package com.manchickas.john.ast;
 
 import com.google.common.collect.ImmutableMap;
-import com.manchickas.john.John;
 import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +49,10 @@ public final class JsonObject extends JsonElement {
             return el;
         throw new JsonException("Expected the object to include '%s' as a property.", name)
                 .withSpan(this.span);
+    }
+
+    public boolean has(String name) {
+        return this.elements.containsKey(name);
     }
 
     @Override

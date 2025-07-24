@@ -32,9 +32,12 @@ public final class DiscriminatedUnionTemplate<Disc, Instance> implements Templat
 
     @Override
     public Result<JsonElement> serialize(Instance value) {
-        var discriminator = this.discriminator.access(value);
-        var template = this.resolver.apply(discriminator);
-        return this.serializeWith(value, template);
+        if (value != null) {
+            var discriminator = this.discriminator.access(value);
+            var template = this.resolver.apply(discriminator);
+            return this.serializeWith(value, template);
+        }
+        return Result.mismatch();
     }
 
     @SuppressWarnings("unchecked")
@@ -45,8 +48,10 @@ public final class DiscriminatedUnionTemplate<Disc, Instance> implements Templat
                     .flatMap(el -> {
                         if (el instanceof JsonObject object) {
                             var name = this.discriminator.property();
-                            var value = this.discriminator.serializeProperty(instance);
-                            return value.map(prop -> object.with(name, prop));
+                            var prop = this.discriminator.serializeProperty(instance);
+                            if (prop.isPresent())
+                                return prop.get()
+                                        .map(element -> object.with(name, element));
                         }
                         return Result.success(el);
                     });

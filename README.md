@@ -21,7 +21,7 @@ To invite your new _co-worker_ to your project, include the following lines in y
 <dependency>
     <groupId>com.manchickas</groupId>
     <artifactId>john</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
