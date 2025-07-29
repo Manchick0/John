@@ -48,5 +48,5 @@ public abstract class RecordTemplate<Instance> implements Template<Instance> {
         return ">...";
     }
 
-    protected abstract List<PropertyTemplate<Instance, ?>> properties();
+    protected abstract List<PropertyTemplate<Instance, ?, ?>> properties();
 }

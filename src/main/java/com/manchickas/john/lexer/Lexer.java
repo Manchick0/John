@@ -14,6 +14,7 @@ public final class Lexer extends StringReader {
     private static final Set<Integer> SEPARATORS = Set.of((int) ',', (int) ':', (int) '{', (int) '}', (int) '[', (int) ']');
     private static final Int2IntMap ESCAPABLE = Int2IntMap.ofEntries(
             Int2IntMap.entry('"', '"'),
+            Int2IntMap.entry('/', '/'),
             Int2IntMap.entry('\\', '\\'),
             Int2IntMap.entry('b', '\b'),
             Int2IntMap.entry('f', '\f'),

@@ -11,10 +11,10 @@ import java.util.List;
 
 public final class UniRecordTemplate<Instance, A> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<Instance, A> first;
+    private final PropertyTemplate<Instance, A, ?> first;
     private final UniConstructor<A, Instance> constructor;
 
-    public UniRecordTemplate(PropertyTemplate<Instance, A> first,
+    public UniRecordTemplate(PropertyTemplate<Instance, A, ?> first,
                              UniConstructor<A, Instance> constructor) {
         this.first = first;
         this.constructor = constructor;
@@ -31,7 +31,7 @@ public final class UniRecordTemplate<Instance, A> extends RecordTemplate<Instanc
     }
 
     @Override
-    protected List<PropertyTemplate<Instance, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?, ?>> properties() {
         return List.of(this.first);
     }
 }

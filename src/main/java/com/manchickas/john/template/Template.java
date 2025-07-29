@@ -1,7 +1,6 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
-import com.manchickas.john.ast.primitive.JsonNull;
 import com.manchickas.john.template.object.MapTemplate;
 import com.manchickas.john.template.object.constructor.*;
 import com.manchickas.john.template.object.type.*;
@@ -254,7 +253,7 @@ public interface Template<T> {
      * @since 1.0.0
      */
     @Contract(value = "_, _ -> new", pure = true)
-    static <Instance, Disc> @NotNull Template<Instance> discriminatedUnion(PropertyTemplate<Instance, Disc> discriminator,
+    static <Instance, Disc> @NotNull Template<Instance> discriminatedUnion(PropertyTemplate<Instance, Disc, ?> discriminator,
                                                                            Function<Disc, Template<? extends Instance>> resolver) {
         return new DiscriminatedUnionTemplate<>(discriminator, resolver);
     }
@@ -273,77 +272,77 @@ public interface Template<T> {
     }
 
     @Contract("_, _ -> new")
-    static <Instance, A> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
+    static <Instance, A> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
                                                             UniConstructor<A, Instance> constructor) {
         return new UniRecordTemplate<>(first, constructor);
     }
 
     @Contract("_, _, _ -> new")
-    static <Instance, A, B> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                               PropertyTemplate<Instance, B> second,
+    static <Instance, A, B> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
+                                                               PropertyTemplate<Instance, B, ?> second,
                                                                BiConstructor<A, B, Instance> constructor) {
         return new BiRecordTemplate<>(first, second, constructor);
     }
 
     @Contract("_, _, _, _ -> new")
-    static <Instance, A, B, C> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                                  PropertyTemplate<Instance, B> second,
-                                                                  PropertyTemplate<Instance, C> third,
+    static <Instance, A, B, C> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
+                                                                  PropertyTemplate<Instance, B, ?> second,
+                                                                  PropertyTemplate<Instance, C, ?> third,
                                                                   TriConstructor<A, B, C, Instance> constructor) {
         return new TriRecordTemplate<>(first, second, third, constructor);
     }
 
     @Contract("_, _, _, _, _ -> new")
-    static <Instance, A, B, C, D> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                                     PropertyTemplate<Instance, B> second,
-                                                                     PropertyTemplate<Instance, C> third,
-                                                                     PropertyTemplate<Instance, D> fourth,
+    static <Instance, A, B, C, D> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
+                                                                     PropertyTemplate<Instance, B, ?> second,
+                                                                     PropertyTemplate<Instance, C, ?> third,
+                                                                     PropertyTemplate<Instance, D, ?> fourth,
                                                                      TetraConstructor<A, B, C, D, Instance> constructor) {
         return new TetraRecordTemplate<>(first, second, third, fourth, constructor);
     }
 
     @Contract("_, _, _, _, _, _ -> new")
-    static <Instance, A, B, C, D, E> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                                        PropertyTemplate<Instance, B> second,
-                                                                        PropertyTemplate<Instance, C> third,
-                                                                        PropertyTemplate<Instance, D> fourth,
-                                                                        PropertyTemplate<Instance, E> fifth,
+    static <Instance, A, B, C, D, E> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
+                                                                        PropertyTemplate<Instance, B, ?> second,
+                                                                        PropertyTemplate<Instance, C, ?> third,
+                                                                        PropertyTemplate<Instance, D, ?> fourth,
+                                                                        PropertyTemplate<Instance, E, ?> fifth,
                                                                         PentaConstructor<A, B, C, D, E, Instance> constructor) {
         return new PentaRecordTemplate<>(first, second, third, fourth, fifth, constructor);
     }
 
     @Contract("_, _, _, _, _, _, _ -> new")
-    static <Instance, A, B, C, D, E, F> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                                           PropertyTemplate<Instance, B> second,
-                                                                           PropertyTemplate<Instance, C> third,
-                                                                           PropertyTemplate<Instance, D> fourth,
-                                                                           PropertyTemplate<Instance, E> fifth,
-                                                                           PropertyTemplate<Instance, F> sixth,
+    static <Instance, A, B, C, D, E, F> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
+                                                                           PropertyTemplate<Instance, B, ?> second,
+                                                                           PropertyTemplate<Instance, C, ?> third,
+                                                                           PropertyTemplate<Instance, D, ?> fourth,
+                                                                           PropertyTemplate<Instance, E, ?> fifth,
+                                                                           PropertyTemplate<Instance, F, ?> sixth,
                                                                            HexaConstructor<A, B, C, D, E, F, Instance> constructor) {
         return new HexaRecordTemplate<>(first, second, third, fourth, fifth, sixth, constructor);
     }
 
     @Contract("_, _, _, _, _, _, _, _ -> new")
-    static <Instance, A, B, C, D, E, F, G> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                                              PropertyTemplate<Instance, B> second,
-                                                                              PropertyTemplate<Instance, C> third,
-                                                                              PropertyTemplate<Instance, D> fourth,
-                                                                              PropertyTemplate<Instance, E> fifth,
-                                                                              PropertyTemplate<Instance, F> sixth,
-                                                                              PropertyTemplate<Instance, G> seventh,
+    static <Instance, A, B, C, D, E, F, G> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
+                                                                              PropertyTemplate<Instance, B, ?> second,
+                                                                              PropertyTemplate<Instance, C, ?> third,
+                                                                              PropertyTemplate<Instance, D, ?> fourth,
+                                                                              PropertyTemplate<Instance, E, ?> fifth,
+                                                                              PropertyTemplate<Instance, F, ?> sixth,
+                                                                              PropertyTemplate<Instance, G, ?> seventh,
                                                                               HeptaConstructor<A, B, C, D, E, F, G, Instance> constructor) {
         return new HeptaRecordTemplate<>(first, second, third, fourth, fifth, sixth, seventh, constructor);
     }
 
     @Contract("_, _, _, _, _, _, _, _, _ -> new")
-    static <Instance, A, B, C, D, E, F, G, H> @NotNull Template<Instance> record(PropertyTemplate<Instance, A> first,
-                                                                                 PropertyTemplate<Instance, B> second,
-                                                                                 PropertyTemplate<Instance, C> third,
-                                                                                 PropertyTemplate<Instance, D> fourth,
-                                                                                 PropertyTemplate<Instance, E> fifth,
-                                                                                 PropertyTemplate<Instance, F> sixth,
-                                                                                 PropertyTemplate<Instance, G> seventh,
-                                                                                 PropertyTemplate<Instance, H> eighth,
+    static <Instance, A, B, C, D, E, F, G, H> @NotNull Template<Instance> record(PropertyTemplate<Instance, A, ?> first,
+                                                                                 PropertyTemplate<Instance, B, ?> second,
+                                                                                 PropertyTemplate<Instance, C, ?> third,
+                                                                                 PropertyTemplate<Instance, D, ?> fourth,
+                                                                                 PropertyTemplate<Instance, E, ?> fifth,
+                                                                                 PropertyTemplate<Instance, F, ?> sixth,
+                                                                                 PropertyTemplate<Instance, G, ?> seventh,
+                                                                                 PropertyTemplate<Instance, H, ?> eighth,
                                                                                  OctaConstructor<A, B, C, D, E, F, G, H, Instance> constructor) {
         return new OctaRecordTemplate<>(first, second, third, fourth, fifth, sixth, seventh, eighth, constructor);
     }
@@ -458,8 +457,14 @@ public interface Template<T> {
      * @param <Instance> the type on which the property can be accessed.
      * @since 1.0.0
      */
-    default <Instance> PropertyTemplate<Instance, T> property(String name, PropertyAccessor<Instance, T> accessor) {
-        return new RequiredPropertyTemplate<>(name, this, accessor);
+    @SuppressWarnings("unchecked")
+    default <Instance, Self extends PropertyTemplate<Instance, T, Self>> Self property(String name, PropertyAccessor<Instance, T> accessor) {
+        return (Self) new RequiredPropertyTemplate<>(
+                name,
+                this,
+                accessor,
+                __ -> false
+        );
     }
 
     /**
@@ -558,7 +563,6 @@ public interface Template<T> {
     default Template<T> refine(Predicate<T> predicate, Supplier<String> message) {
         return new Template<>() {
 
-
             @Override
             public Result<T> parse(JsonElement element) {
                 return Template.this.parse(element)
@@ -595,82 +599,22 @@ public interface Template<T> {
     }
 
     /**
-     * Composes a {@link Template} that supplies the provided {@code other} value if the current template
-     * couldn't yield one itself.
-     * <br><br>
-     * The composed {@link Template} effectively never mismatches on {@link #parse(JsonElement)} operations.
-     * @param other the default value to supply.
-     * @return a {@link Template} that yields the current template's value, or {@code other} if none was produced.
-     * @since 1.0.0
+     * Composes a {@link Template} that, if the current template doesn't yield a value itself,
+     * matches on JSON {@code null}s.
+     *
+     * @return a {@link Template} that yield the current template's value, or {@code null}.
      */
-    default Template<T> orElse(T other) {
-        return new Template<>() {
-
-            @Override
-            public Result<T> parse(JsonElement element) {
-                var result = Template.this.parse(element);
-                if (result.isSuccess())
-                    return result;
-                return Result.success(other);
-            }
-
-            @Override
-            public Result<JsonElement> serialize(T value) {
-                var result = Template.this.serialize(value);
-                if (result.isSuccess())
-                    return result;
-                return Template.this.serialize(other);
-            }
-
-            @Override
-            public String name(IntSet encountered) {
-                return Template.this.name(encountered) + "??";
-            }
-
-            @Override
-            public int hashCode() {
-                return Template.this.hashCode();
-            }
-        };
+    default Template<T> optional() {
+        return this.optional(() -> null);
     }
 
     /**
-     * Composes a {@link Template} that, if the current template doesn't yield a value itself, matches on {@code null} values.
+     * Composes a {@link Template} that, if the current template doesn't yield a value itself,
+     * matches on JSON {@code null}s with the value provided by the given {@link Supplier}.
      *
-     * @return a {@link Template} that yields the current template's value, or {@code null} if the value is {@code null}.
+     * @return a {@link Template} that yield the current template's value, or {@code null}.
      */
-    default Template<T> optional() {
-        return new Template<>() {
-
-            @Override
-            public Result<T> parse(JsonElement element) {
-                var result = Template.this.parse(element);
-                if (result.isSuccess())
-                    return result;
-                if (element instanceof JsonNull)
-                    return Result.success(null);
-                return Result.mismatch();
-            }
-
-            @Override
-            public Result<JsonElement> serialize(@Nullable T value) {
-                var result = Template.this.serialize(value);
-                if (result.isSuccess())
-                    return result;
-                if (value == null || value instanceof JsonNull)
-                    return Result.success(new JsonNull());
-                return Result.mismatch();
-            }
-
-            @Override
-            public String name(IntSet encountered) {
-                return Template.this.name(encountered) + '?';
-            }
-
-            @Override
-            public int hashCode() {
-                return Template.this.hashCode();
-            }
-        };
+    default Template<T> optional(@NotNull Supplier<@Nullable T> supplier) {
+        return new OptionalTemplate<>(this, supplier);
     }
 }

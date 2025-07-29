@@ -11,20 +11,20 @@ import java.util.List;
 
 public final class HexaRecordTemplate<A, B, C, D, E, F, Instance> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<Instance, A> first;
-    private final PropertyTemplate<Instance, B> second;
-    private final PropertyTemplate<Instance, C> third;
-    private final PropertyTemplate<Instance, D> fourth;
-    private final PropertyTemplate<Instance, E> fifth;
-    private final PropertyTemplate<Instance, F> sixth;
+    private final PropertyTemplate<Instance, A, ?> first;
+    private final PropertyTemplate<Instance, B, ?> second;
+    private final PropertyTemplate<Instance, C, ?> third;
+    private final PropertyTemplate<Instance, D, ?> fourth;
+    private final PropertyTemplate<Instance, E, ?> fifth;
+    private final PropertyTemplate<Instance, F, ?> sixth;
     private final HexaConstructor<A, B, C, D, E, F, Instance> constructor;
 
-    public HexaRecordTemplate(PropertyTemplate<Instance, A> first,
-                              PropertyTemplate<Instance, B> second,
-                              PropertyTemplate<Instance, C> third,
-                              PropertyTemplate<Instance, D> fourth,
-                              PropertyTemplate<Instance, E> fifth,
-                              PropertyTemplate<Instance, F> sixth,
+    public HexaRecordTemplate(PropertyTemplate<Instance, A, ?> first,
+                              PropertyTemplate<Instance, B, ?> second,
+                              PropertyTemplate<Instance, C, ?> third,
+                              PropertyTemplate<Instance, D, ?> fourth,
+                              PropertyTemplate<Instance, E, ?> fifth,
+                              PropertyTemplate<Instance, F, ?> sixth,
                               HexaConstructor<A, B, C, D, E, F, Instance> constructor) {
         this.first = first;
         this.second = second;
@@ -51,7 +51,7 @@ public final class HexaRecordTemplate<A, B, C, D, E, F, Instance> extends Record
     }
 
     @Override
-    protected List<PropertyTemplate<Instance, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?, ?>> properties() {
         return List.of(this.first, this.second, this.third, this.fourth, this.fifth, this.sixth);
     }
 }

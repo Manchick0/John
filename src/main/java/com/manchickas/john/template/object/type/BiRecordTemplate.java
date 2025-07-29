@@ -11,12 +11,12 @@ import java.util.List;
 
 public final class BiRecordTemplate<A, B, Instance> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<Instance, A> first;
-    private final PropertyTemplate<Instance, B> second;
+    private final PropertyTemplate<Instance, A, ?> first;
+    private final PropertyTemplate<Instance, B, ?> second;
     private final BiConstructor<A, B, Instance> constructor;
 
-    public BiRecordTemplate(PropertyTemplate<Instance, A> first,
-                            PropertyTemplate<Instance, B> second,
+    public BiRecordTemplate(PropertyTemplate<Instance, A, ?> first,
+                            PropertyTemplate<Instance, B, ?> second,
                             BiConstructor<A, B, Instance> constructor) {
         this.first = first;
         this.second = second;
@@ -35,7 +35,7 @@ public final class BiRecordTemplate<A, B, Instance> extends RecordTemplate<Insta
     }
 
     @Override
-    protected List<PropertyTemplate<Instance, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?, ?>> properties() {
         return List.of(this.first, this.second);
     }
 }

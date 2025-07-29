@@ -5,37 +5,40 @@ import com.manchickas.john.template.object.property.PropertyAccessor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class RequiredPropertyTemplate<Instance, T> extends PropertyTemplate<Instance, T> {
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+public final class RequiredPropertyTemplate<Instance, T> extends PropertyTemplate<Instance, T, RequiredPropertyTemplate<Instance, T>> {
 
     public RequiredPropertyTemplate(String property,
                                     Template<T> template,
-                                    PropertyAccessor<Instance, T> accessor) {
-        super(property, template, accessor);
+                                    PropertyAccessor<Instance, T> accessor,
+                                    Predicate<T> omitRule) {
+        super(property, template, accessor, omitRule);
     }
 
     @Override
-    public PropertyTemplate<Instance, T> orElse(T other) {
-        return new DefaultedPropertyTemplate<>(
+    public OptionalPropertyTemplate<Instance, T> optional(@NotNull Supplier<@Nullable T> supplier) {
+        return new OptionalPropertyTemplate<>(
+                this.property,
+                this.template.optional(supplier),
+                this.accessor,
+                this.omitRule,
+                supplier
+        );
+    }
+
+    @Override
+    public RequiredPropertyTemplate<Instance, T> omitWhen(Predicate<T> omitRule) {
+        return new RequiredPropertyTemplate<>(
                 this.property,
                 this.template,
                 this.accessor,
-                other
+                omitRule
         );
-    }
-
-    @Override
-    public PropertyTemplate<Instance, T> optional() {
-        return new OptionalPropertyTemplate<>(
-                this.property,
-                this.template,
-                this.accessor
-        );
-    }
-
-    @Override
-    protected boolean omitNulls() {
-        return false;
     }
 
     @Override

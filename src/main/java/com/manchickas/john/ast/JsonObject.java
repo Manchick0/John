@@ -35,7 +35,7 @@ public final class JsonObject extends JsonElement {
             builder.append('"')
                     .append(key)
                     .append('"')
-                    .append(":\\s")
+                    .append(":\\s?")
                     .append(value.stringifyPattern());
         }
         return builder.append("\\-n}")

@@ -11,22 +11,22 @@ import java.util.List;
 
 public final class HeptaRecordTemplate<A, B, C, D, E, F, H, Instance> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<Instance, A> first;
-    private final PropertyTemplate<Instance, B> second;
-    private final PropertyTemplate<Instance, C> third;
-    private final PropertyTemplate<Instance, D> fourth;
-    private final PropertyTemplate<Instance, E> fifth;
-    private final PropertyTemplate<Instance, F> sixth;
-    private final PropertyTemplate<Instance, H> seventh;
+    private final PropertyTemplate<Instance, A, ?> first;
+    private final PropertyTemplate<Instance, B, ?> second;
+    private final PropertyTemplate<Instance, C, ?> third;
+    private final PropertyTemplate<Instance, D, ?> fourth;
+    private final PropertyTemplate<Instance, E, ?> fifth;
+    private final PropertyTemplate<Instance, F, ?> sixth;
+    private final PropertyTemplate<Instance, H, ?> seventh;
     private final HeptaConstructor<A, B, C, D, E, F, H, Instance> constructor;
 
-    public HeptaRecordTemplate(PropertyTemplate<Instance, A> first,
-                               PropertyTemplate<Instance, B> second,
-                               PropertyTemplate<Instance, C> third,
-                               PropertyTemplate<Instance, D> fourth,
-                               PropertyTemplate<Instance, E> fifth,
-                               PropertyTemplate<Instance, F> sixth,
-                               PropertyTemplate<Instance, H> seventh,
+    public HeptaRecordTemplate(PropertyTemplate<Instance, A, ?> first,
+                               PropertyTemplate<Instance, B, ?> second,
+                               PropertyTemplate<Instance, C, ?> third,
+                               PropertyTemplate<Instance, D, ?> fourth,
+                               PropertyTemplate<Instance, E, ?> fifth,
+                               PropertyTemplate<Instance, F, ?> sixth,
+                               PropertyTemplate<Instance, H, ?> seventh,
                                HeptaConstructor<A, B, C, D, E, F, H, Instance> constructor) {
         this.first = first;
         this.second = second;
@@ -55,7 +55,7 @@ public final class HeptaRecordTemplate<A, B, C, D, E, F, H, Instance> extends Re
     }
 
     @Override
-    protected List<PropertyTemplate<Instance, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?, ?>> properties() {
         return List.of(this.first, this.second, this.third, this.fourth, this.fifth, this.sixth, this.seventh);
     }
 }

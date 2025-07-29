@@ -11,18 +11,18 @@ import java.util.List;
 
 public final class PentaRecordTemplate<A, B, C, D, E, Instance> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<Instance, A> first;
-    private final PropertyTemplate<Instance, B> second;
-    private final PropertyTemplate<Instance, C> third;
-    private final PropertyTemplate<Instance, D> fourth;
-    private final PropertyTemplate<Instance, E> fifth;
+    private final PropertyTemplate<Instance, A, ?> first;
+    private final PropertyTemplate<Instance, B, ?> second;
+    private final PropertyTemplate<Instance, C, ?> third;
+    private final PropertyTemplate<Instance, D, ?> fourth;
+    private final PropertyTemplate<Instance, E, ?> fifth;
     private final PentaConstructor<A, B, C, D, E, Instance> constructor;
 
-    public PentaRecordTemplate(PropertyTemplate<Instance, A> first,
-                               PropertyTemplate<Instance, B> second,
-                               PropertyTemplate<Instance, C> third,
-                               PropertyTemplate<Instance, D> fourth,
-                               PropertyTemplate<Instance, E> fifth,
+    public PentaRecordTemplate(PropertyTemplate<Instance, A, ?> first,
+                               PropertyTemplate<Instance, B, ?> second,
+                               PropertyTemplate<Instance, C, ?> third,
+                               PropertyTemplate<Instance, D, ?> fourth,
+                               PropertyTemplate<Instance, E, ?> fifth,
                                PentaConstructor<A, B, C, D, E, Instance> constructor) {
         this.first = first;
         this.second = second;
@@ -47,7 +47,7 @@ public final class PentaRecordTemplate<A, B, C, D, E, Instance> extends RecordTe
     }
 
     @Override
-    protected List<PropertyTemplate<Instance, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?, ?>> properties() {
         return List.of(this.first, this.second, this.third, this.fourth, this.fifth);
     }
 }

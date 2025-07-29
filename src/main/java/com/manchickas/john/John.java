@@ -199,13 +199,23 @@ public final class John {
      * <br><br>
      * While this method is used internally for most stringification logic, it <b>is</b> intended for
      * public usage in cases where you need to hack together some JSON manually.
+     * <br><br>
      *
      * <pre>{@code
      *      var pattern = """
-     *          {\\+n"key":\\s[\\+n"foo",\\n"bar"\\-n]\\-n}
+     *          {\\+n"key":\\s?[\\+n"foo",\\n"bar\\s!baz"\\-n]\\-n}
      *      """;
      *      var json = John.stringifyPattern(pattern, 4);
      *      System.out.println(json);
+     * }</pre>
+     *
+     * <pre> {@code
+     * {
+     *     "key": [
+     *         "foo",
+     *         "bar baz"
+     *     ]
+     * }
      * }</pre>
      *
      * @param pattern the stringify pattern to convert.
@@ -234,16 +244,26 @@ public final class John {
                         continue;
                     }
                     var span = reader.relativeSpan(2, 0);
-                    throw new JsonException("Expected an 'n' to follow a sign escape.")
+                    throw new JsonException("Expected an 'n' to follow a '+/n' escape.")
                             .withSpan(span);
                 }
                 if (d == 's') {
-                    if (indentation > 0)
-                        buffer.append(' ');
-                    continue;
+                    var e = reader.read();
+                    if (e == '!' || e == '?') {
+                        if (e == '!' || indentation > 0)
+                            buffer.append(' ');
+                        continue;
+                    }
+                    var span = reader.relativeSpan(2, 0);
+                    throw new JsonException("Expected either am '!' or a '?' to follow an 's' escape.")
+                            .withSpan(span);
                 }
                 if (d == 'n') {
                     John.appendNewLine(buffer, indentation, depth);
+                    continue;
+                }
+                if (d == '\\' && reader.canRead()) {
+                    buffer.append('\\').appendCodePoint(reader.read());
                     continue;
                 }
                 var span = reader.relativeSpan(2, 0);

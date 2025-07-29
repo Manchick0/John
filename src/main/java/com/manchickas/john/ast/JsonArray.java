@@ -24,7 +24,7 @@ public final class JsonArray extends JsonElement {
             for (var i = 0; i < this.length(); i++) {
                 var element = this.elements[i];
                 if (i > 0)
-                    builder.append(",\\s\\n");
+                    builder.append(",\\s?\\n");
                 builder.append(element.stringifyPattern());
             }
             return builder.append("\\-n]")

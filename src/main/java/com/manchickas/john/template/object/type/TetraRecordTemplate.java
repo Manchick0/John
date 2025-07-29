@@ -11,16 +11,16 @@ import java.util.List;
 
 public final class TetraRecordTemplate<A, B, C, D, Instance> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<Instance, A> first;
-    private final PropertyTemplate<Instance, B> second;
-    private final PropertyTemplate<Instance, C> third;
-    private final PropertyTemplate<Instance, D> fourth;
+    private final PropertyTemplate<Instance, A, ?> first;
+    private final PropertyTemplate<Instance, B, ?> second;
+    private final PropertyTemplate<Instance, C, ?> third;
+    private final PropertyTemplate<Instance, D, ?> fourth;
     private final TetraConstructor<A, B, C, D, Instance> constructor;
 
-    public TetraRecordTemplate(PropertyTemplate<Instance, A> first,
-                               PropertyTemplate<Instance, B> second,
-                               PropertyTemplate<Instance, C> third,
-                               PropertyTemplate<Instance, D> fourth,
+    public TetraRecordTemplate(PropertyTemplate<Instance, A, ?> first,
+                               PropertyTemplate<Instance, B, ?> second,
+                               PropertyTemplate<Instance, C, ?> third,
+                               PropertyTemplate<Instance, D, ?> fourth,
                                TetraConstructor<A, B, C, D, Instance> constructor) {
         this.first = first;
         this.second = second;
@@ -43,7 +43,7 @@ public final class TetraRecordTemplate<A, B, C, D, Instance> extends RecordTempl
     }
 
     @Override
-    protected List<PropertyTemplate<Instance, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?, ?>> properties() {
         return List.of(this.first, this.second, this.third, this.fourth);
     }
 }

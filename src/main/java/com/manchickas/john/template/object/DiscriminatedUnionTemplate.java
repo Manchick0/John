@@ -11,10 +11,10 @@ import java.util.function.Function;
 
 public final class DiscriminatedUnionTemplate<Disc, Instance> implements Template<Instance> {
 
-    private final PropertyTemplate<Instance, Disc> discriminator;
+    private final PropertyTemplate<Instance, Disc, ?> discriminator;
     private final Function<Disc, Template<? extends Instance>> resolver;
 
-    public DiscriminatedUnionTemplate(PropertyTemplate<Instance, Disc> discriminator,
+    public DiscriminatedUnionTemplate(PropertyTemplate<Instance, Disc, ?> discriminator,
                                       Function<Disc, Template<? extends Instance>> resolver) {
         this.discriminator = discriminator;
         this.resolver = resolver;

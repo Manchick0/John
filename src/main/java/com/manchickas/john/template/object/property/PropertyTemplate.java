@@ -6,56 +6,59 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.Template;
 import com.manchickas.john.template.Result;
+import com.manchickas.john.template.object.property.type.OptionalPropertyTemplate;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public abstract class PropertyTemplate<Instance, T> implements Template<T> {
+public abstract class PropertyTemplate<Instance, T, Self extends PropertyTemplate<Instance, T, Self>> implements Template<T> {
 
     protected final String property;
     protected final Template<T> template;
     protected final PropertyAccessor<Instance, T> accessor;
+    protected final Predicate<@Nullable T> omitRule;
 
     public PropertyTemplate(String property,
                             Template<T> template,
-                            PropertyAccessor<Instance, T> accessor) {
+                            PropertyAccessor<Instance, T> accessor,
+                            Predicate<T> omitRule) {
         this.property = property;
         this.template = template;
         this.accessor = accessor;
+        this.omitRule = omitRule;
     }
 
     /**
-     * Composes a {@link Template} that supplies the provided {@code other} value if the necessary property isn't
-     * present on the object.
-     * <br><br>
-     * The composed {@link Template} effectively never mismatches on {@link #parse(JsonElement)} operations.
-     * @param other the default value to supply.
-     * @return a {@link Template} that yields the current template's value, or {@code other} if the property wasn't present.
-     * @since 1.0.0
-     */
-    @Override
-    public abstract PropertyTemplate<Instance, T> orElse(T other);
-
-    /**
      * Composes a {@link Template} that supplies {@code null} if the necessary property isn't present on the object.
-     * <br><br>
-     * If an <b>optional</b> property ends up being {@code null} during serialization, it's omitted altogether.
      *
      * @return a {@link Template} that yields the current template's value, or {@code null} if the property wasn't present.
      * @since 1.2.0
      */
     @Override
-    public abstract PropertyTemplate<Instance, T> optional();
+    public OptionalPropertyTemplate<Instance, T> optional() {
+        return this.optional(() -> null);
+    }
 
-    protected abstract Result<T> missingResult(SourceSpan span);
-    protected abstract boolean omitNulls();
+    @Override
+    public abstract OptionalPropertyTemplate<Instance, T> optional(@NotNull Supplier<@Nullable T> supplier);
+
+    public Self omitNulls() {
+        return this.omitWhen(Objects::isNull);
+    }
+
+    public abstract Self omitWhen(Predicate<@Nullable T> omitRule);
 
     public Optional<Result<JsonElement>> serializeProperty(Instance instance) {
         var value = this.access(instance);
-        if (value == null && this.omitNulls())
+        if (this.omitRule.test(value))
             return Optional.empty();
         return Optional.of(this.serialize(value));
-    };
+    }
 
     @Override
     public Result<T> parse(JsonElement element) {
@@ -69,6 +72,8 @@ public abstract class PropertyTemplate<Instance, T> implements Template<T> {
         }
         return Result.mismatch();
     }
+
+    protected abstract Result<T> missingResult(SourceSpan span);
 
     @Override
     public Result<JsonElement> serialize(T value) {

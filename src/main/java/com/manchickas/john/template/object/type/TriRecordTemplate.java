@@ -11,14 +11,14 @@ import java.util.List;
 
 public final class TriRecordTemplate<A, B, C, Instance> extends RecordTemplate<Instance> {
 
-    private final PropertyTemplate<Instance, A> first;
-    private final PropertyTemplate<Instance, B> second;
-    private final PropertyTemplate<Instance, C> third;
+    private final PropertyTemplate<Instance, A, ?> first;
+    private final PropertyTemplate<Instance, B, ?> second;
+    private final PropertyTemplate<Instance, C, ?> third;
     private final TriConstructor<A, B, C, Instance> constructor;
 
-    public TriRecordTemplate(PropertyTemplate<Instance, A> first,
-                             PropertyTemplate<Instance, B> second,
-                             PropertyTemplate<Instance, C> third,
+    public TriRecordTemplate(PropertyTemplate<Instance, A, ?> first,
+                             PropertyTemplate<Instance, B, ?> second,
+                             PropertyTemplate<Instance, C, ?> third,
                              TriConstructor<A, B, C, Instance> constructor) {
         this.first = first;
         this.second = second;
@@ -39,7 +39,7 @@ public final class TriRecordTemplate<A, B, C, Instance> extends RecordTemplate<I
     }
 
     @Override
-    protected List<PropertyTemplate<Instance, ?>> properties() {
+    protected List<PropertyTemplate<Instance, ?, ?>> properties() {
         return List.of(this.first, this.second, this.third);
     }
 }
