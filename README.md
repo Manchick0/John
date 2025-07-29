@@ -141,7 +141,8 @@ public record Person(String name, int age, Person[] friends) {
             Template.lazy(() -> Person.TEMPLATE)
                     .array(Person[]::new)
                     .property("friends", Person::friends)
-                    .orElse(new Person[0]),
+                    .optional(() -> new Person[0])
+                    .omitWhen(friends -> friends == null || friends.length == 0),
             Person::new
     );
 }
