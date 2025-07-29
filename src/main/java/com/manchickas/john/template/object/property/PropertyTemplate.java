@@ -34,9 +34,11 @@ public abstract class PropertyTemplate<Instance, T, Self extends PropertyTemplat
     }
 
     /**
-     * Composes a {@link Template} that supplies {@code null} if the necessary property isn't present on the object.
+     * Composes a {@link Template} that supplies {@code null} if the property is either
+     * absent from the object or its value is explicitly set to {@code null}.
      *
-     * @return a {@link Template} that yields the current template's value, or {@code null} if the property wasn't present.
+     * @return a {@link Template} that either yields the value of the underlying {@link #template}, or {@code null}
+     * otherwise.
      * @since 1.2.0
      */
     @Override
@@ -44,13 +46,37 @@ public abstract class PropertyTemplate<Instance, T, Self extends PropertyTemplat
         return this.optional(() -> null);
     }
 
+    /**
+     * Composes a {@link Template} that supplies the result of provided {@code supplier}, if the property is either
+     * absent from the object or its value is explicitly set to {@code null}.
+     *
+     * @param supplier the supplier of the fallback value.
+     * @return a {@link Template} that either yields the value of the underlying {@link #template}, or the result
+     * of the provided {@code supplier} otherwise.
+     * @since 2.0.0
+     */
     @Override
     public abstract OptionalPropertyTemplate<Instance, T> optional(@NotNull Supplier<@Nullable T> supplier);
 
+    /**
+     * Composes a {@link Template} that, during {@linkplain #serialize(Object) serialization}, excludes the {@link #property} property from the
+     * resulting object if it's explicitly set to {@code null}.
+     *
+     * @return a {@link Template} that excludes the property from the resulting object if it's set to {@code null}.
+     * @since 2.0.0
+     */
     public Self omitNulls() {
         return this.omitWhen(Objects::isNull);
     }
 
+    /**
+     * Composes a {@link Template} that, during {@linkplain #serialize(Object) serialization}, excludes the {@link #property} property from the
+     * resulting object if its value passes the provided {@code omitRule} predicate.
+     *
+     * @param omitRule the predicate, determining when to exclude the property.
+     * @return a {@link Template} that excludes the property from the resulting object if its value passes the provided {@code omitRule} predicate.
+     * @since 2.0.0
+     */
     public abstract Self omitWhen(Predicate<@Nullable T> omitRule);
 
     public Optional<Result<JsonElement>> serializeProperty(Instance instance) {

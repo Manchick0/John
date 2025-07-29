@@ -404,7 +404,7 @@ public interface Template<T> {
 
     default Result<JsonElement> serializeAndPromote(T value) {
         return this.serialize(value).promoteMismatch("Expected a value that would satisfy the template of type '%s'"
-                .formatted(this.name(new IntOpenHashSet())), SourceSpan.lineWide(value.toString(), 1));
+                .formatted(this.name(new IntOpenHashSet())), SourceSpan.lineWide(String.valueOf(value), 1));
     }
 
     /**
@@ -603,6 +603,7 @@ public interface Template<T> {
      * matches on JSON {@code null}s.
      *
      * @return a {@link Template} that yield the current template's value, or {@code null}.
+     * @since 1.2.0
      */
     default Template<T> optional() {
         return this.optional(() -> null);
@@ -613,6 +614,7 @@ public interface Template<T> {
      * matches on JSON {@code null}s with the value provided by the given {@link Supplier}.
      *
      * @return a {@link Template} that yield the current template's value, or {@code null}.
+     * @since 2.0.0
      */
     default Template<T> optional(@NotNull Supplier<@Nullable T> supplier) {
         return new OptionalTemplate<>(this, supplier);
