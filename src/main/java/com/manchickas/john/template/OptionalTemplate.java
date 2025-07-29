@@ -22,21 +22,25 @@ public final class OptionalTemplate<T> implements Template<T> {
     @Override
     public Result<T> parse(JsonElement element) {
         var result = this.template.parse(element);
-        if (result.isSuccess())
+        if (result.isMismatch() || result.isError()) {
+            if (element instanceof JsonNull || element == null)
+                return Result.success(this.supplier.get());
+            // Either an error or a mismatch (-> gets propagated)
             return result;
-        if (element instanceof JsonNull || element == null)
-            return Result.success(this.supplier.get());
-        return Result.mismatch();
+        }
+        return result;
     }
 
     @Override
     public Result<JsonElement> serialize(@Nullable T value) {
         var result = this.template.serialize(value);
-        if (result.isSuccess())
+        if (result.isMismatch() || result.isError()) {
+            if (value == null)
+                return Result.success(new JsonNull());
+            // Either an error or a mismatch (-> gets propagated)
             return result;
-        if (value == null)
-            return Result.success(new JsonNull());
-        return Result.mismatch();
+        }
+        return result;
     }
 
     @Override

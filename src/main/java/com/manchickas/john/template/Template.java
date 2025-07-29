@@ -398,13 +398,19 @@ public interface Template<T> {
     }
 
     default Result<T> parseAndPromote(JsonElement element) {
-        return this.parse(element).promoteMismatch("Expected a value that would satisfy the template of type '%s'"
-                .formatted(this.name(new IntOpenHashSet())), element.span());
+        return this.parse(element).promoteMismatch(
+                "Expected a value that would satisfy the template of type '%s'"
+                    .formatted(this.name(new IntOpenHashSet())),
+                element.span()
+        );
     }
 
     default Result<JsonElement> serializeAndPromote(T value) {
-        return this.serialize(value).promoteMismatch("Expected a value that would satisfy the template of type '%s'"
-                .formatted(this.name(new IntOpenHashSet())), SourceSpan.lineWide(String.valueOf(value), 1));
+        return this.serialize(value).promoteMismatch(
+                "Expected a value that would satisfy the template of type '%s'"
+                        .formatted(this.name(new IntOpenHashSet())),
+                SourceSpan.lineWide(String.valueOf(value), 1)
+        );
     }
 
     /**

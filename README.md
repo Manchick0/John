@@ -21,12 +21,12 @@ To invite your new _co-worker_ to your project, include the following lines in y
 <dependency>
     <groupId>com.manchickas</groupId>
     <artifactId>john</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
 > ```kts
-> implementation("com.manchickas:john:2.0.0")
+> implementation("com.manchickas:john:2.0.1")
 > ```
 
 ```java
