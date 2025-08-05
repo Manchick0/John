@@ -481,8 +481,8 @@ public interface Template<T> {
      * During serialization, the composed {@link Template} transforms the value back to the one requested by the underlying template
      * using the {@code remapper} function, and delegates the process back to it.
      * <br><br>
-     * Any exceptions, even checked ones, thrown during both forward and backward transformation get wrapped as {@link com.manchickas.john.template.Result.Error Errors}s. Exceptions
-     * without a {@code detailMessage} get recognized as {@link com.manchickas.john.template.Result.Mismatch Mismatches}, resulting in a generic error message
+     * All exceptions, even checked ones, thrown during both forward and backward transformation get wrapped as {@link com.manchickas.john.template.Result.Error Errors}s. Exceptions
+     * without a {@code detailMessage} are recognized as {@link com.manchickas.john.template.Result.Mismatch Mismatches}, resulting in a generic error message
      * with the {@link #name(IntSet)} of the {@link Template} inferred.
      * <br><br>
      * <pre>{@code
@@ -493,7 +493,7 @@ public interface Template<T> {
      *              // No detail message provided => Mismatch
      *              throw new NumberFormatException();
      *          }
-     *      }, Object::toString)
+     *      }, Object::toString);
      *      John.parse("\"ABC\"", template);
      * }</pre>
      * <pre>{@code
