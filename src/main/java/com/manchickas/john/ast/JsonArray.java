@@ -4,6 +4,8 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.position.SourceSpan;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 public final class JsonArray extends JsonElement {
 
     private final JsonElement[] elements;
@@ -33,8 +35,8 @@ public final class JsonArray extends JsonElement {
         return "[]";
     }
 
-    @Override
     @NotNull
+    @Override
     public JsonElement subscript(int index) throws JsonException {
         if (index >= 0) {
             if (index < this.length())
@@ -43,6 +45,23 @@ public final class JsonArray extends JsonElement {
                     .withSpan(this.span);
         }
         throw new JsonException("Attempted to access an element at index '%d' of a JSON array.", index);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof JsonArray other) {
+            var span = other.span();
+            if (span == null || this.span == null || this.span.equals(span))
+                return Arrays.equals(this.elements, other.elements);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.elements);
     }
 
     @Override

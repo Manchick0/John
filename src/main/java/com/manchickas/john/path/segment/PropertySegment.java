@@ -1,14 +1,10 @@
 package com.manchickas.john.path.segment;
 
-import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.exception.JsonException;
 import org.jetbrains.annotations.NotNull;
 
 public record PropertySegment(String name) implements PathSegment {
-
-    public PropertySegment(String name) {
-        this.name = name;
-    }
 
     @Override
     public @NotNull JsonElement resolve(JsonElement root) throws JsonException {
@@ -16,12 +12,12 @@ public record PropertySegment(String name) implements PathSegment {
     }
 
     @Override
-    public int depth() {
-        return 1;
+    public @NotNull String toString() {
+        return this.name;
     }
 
     @Override
-    public @NotNull String toString() {
-        return this.name;
+    public int depth() {
+        return 1;
     }
 }

@@ -2,10 +2,10 @@ package com.manchickas.john.template.object.type;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.JsonObject;
+import com.manchickas.john.template.Result;
 import com.manchickas.john.template.object.RecordTemplate;
 import com.manchickas.john.template.object.constructor.HexaConstructor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
-import com.manchickas.john.template.Result;
 
 import java.util.List;
 
@@ -39,14 +39,14 @@ public final class HexaRecordTemplate<A, B, C, D, E, F, Instance> extends Record
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
             return this.first.parseAndPromote(element).flatMap(first ->
-                this.second.parseAndPromote(element).flatMap(second ->
-                        this.third.parseAndPromote(element).flatMap(third ->
-                                this.fourth.parseAndPromote(element).flatMap(fourth ->
-                                        this.fifth.parseAndPromote(element).flatMap(fifth ->
-                                                this.sixth.parseAndPromote(element).flatMap(sixth -> {
-                                                    var instance = this.constructor.construct(first, second, third, fourth, fifth, sixth);
-                                                    return Result.success(instance);
-                                                }))))));
+                    this.second.parseAndPromote(element).flatMap(second ->
+                            this.third.parseAndPromote(element).flatMap(third ->
+                                    this.fourth.parseAndPromote(element).flatMap(fourth ->
+                                            this.fifth.parseAndPromote(element).flatMap(fifth ->
+                                                    this.sixth.parseAndPromote(element).flatMap(sixth -> {
+                                                        var instance = this.constructor.construct(first, second, third, fourth, fifth, sixth);
+                                                        return Result.success(instance);
+                                                    }))))));
         return Result.mismatch();
     }
 

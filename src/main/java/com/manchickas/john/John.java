@@ -19,11 +19,13 @@ import java.nio.file.Path;
  * ranging from {@linkplain #parse(String) parsing} to {@linkplain #serialize(Object, Template) serialization} and {@linkplain #stringify(JsonElement, int) stringification}.
  * <br><br>
  * The {@code John} class is intended as the main way to interact with the John library.
+ *
  * @since 1.0.0
  */
 public final class John {
 
-    private John() {}
+    private John() {
+    }
 
     /**
      * Attempts to parse the provided {@code source} into an arbitrary {@link JsonElement}.
@@ -47,7 +49,7 @@ public final class John {
      * <br><br>
      * The process is functionally identical to calling the {@link JsonElement#expect(Template)} method on a parsed {@link JsonElement}.
      *
-     * @param source the source containing the JSON to parse.
+     * @param source   the source containing the JSON to parse.
      * @param template the template the JSON must satisfy.
      * @return the parsed from the {@link JsonElement} value.
      * @throws JsonException if the {@code source} contains any invalid JSON, or if the parsed JSON doesn't satisfy the provided {@code template}.
@@ -64,12 +66,12 @@ public final class John {
      * @param path the path to read the file from.
      * @return the parsed {@link JsonElement}.
      * @throws JsonException if the file contains any invalid JSON.
-     * @throws IOException if any I/O occurred while reading the file.
+     * @throws IOException   if any I/O occurred while reading the file.
      * @since 1.0.0
      */
     @NotNull
     public static JsonElement parse(Path path) throws JsonException, IOException {
-        try(var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+        try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             var builder = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null)
@@ -84,11 +86,11 @@ public final class John {
      * <br><br>
      * The process is functionally identical to calling the {@link JsonElement#expect(Template)} method on a parsed {@link JsonElement}.
      *
-     * @param path the path to read the file from.
+     * @param path     the path to read the file from.
      * @param template the template the JSON must satisfy.
      * @return the parsed from the {@link JsonElement} value.
      * @throws JsonException if the file contains any invalid JSON.
-     * @throws IOException if any I/O occurred while reading the file.
+     * @throws IOException   if any I/O occurred while reading the file.
      * @since 1.0.0
      */
     @NotNull
@@ -99,7 +101,7 @@ public final class John {
     /**
      * Attempts to serialize the provided {@code element} to a {@link JsonElement} according to the provided {@link Template}.
      *
-     * @param element the element to serialize.
+     * @param element  the element to serialize.
      * @param template the template the element must satisfy.
      * @return the serialized {@link JsonElement}.
      * @throws JsonException if the {@code element} doesn't satisfy the provided {@link Template}.
@@ -119,7 +121,7 @@ public final class John {
      * {@link #serialize(Object, Template) serializing} it according to the provided {@link Template},
      * and then delegating to the {@link JsonElement} stringification.
      *
-     * @param element the element to stringify.
+     * @param element  the element to stringify.
      * @param template the {@link Template} the {@code element} must satisfy.
      * @return the minified string representation of the {@code element}.
      * @throws JsonException if the {@code element} doesn't satisfy the provided {@link Template}.
@@ -134,8 +136,8 @@ public final class John {
      * first {@link #serialize(Object, Template) serializing} it according to the provided {@link Template},
      * and then delegating to {@link JsonElement} stringification.
      *
-     * @param element the element to stringify.
-     * @param template the {@link Template} the {@code element} must satisfy.
+     * @param element     the element to stringify.
+     * @param template    the {@link Template} the {@code element} must satisfy.
      * @param indentation the number of spaces per nesting level.
      * @return the string representation of the {@code element}.
      * @throws JsonException if the {@code element} doesn't satisfy the provided {@link Template}.
@@ -164,7 +166,7 @@ public final class John {
      * The process is functionally identical to {@linkplain #stringifyPattern(String, int) stringifying} the pattern
      * returned by {@link JsonElement#stringifyPattern()}.
      *
-     * @param element the {@link JsonElement} to stringify.
+     * @param element     the {@link JsonElement} to stringify.
      * @param indentation the number of spaces per nesting level.
      * @return the string representation of the {@link JsonElement}.
      * @since 1.0.0
@@ -218,7 +220,7 @@ public final class John {
      * }
      * }</pre>
      *
-     * @param pattern the stringify pattern to convert.
+     * @param pattern     the stringify pattern to convert.
      * @param indentation the number of spaces per nesting level.
      * @return the properly formatted JSON string.
      * @throws JsonException if the pattern contains any invalid escape sequences.
@@ -255,7 +257,7 @@ public final class John {
                         continue;
                     }
                     var span = reader.relativeSpan(2, 0);
-                    throw new JsonException("Expected either am '!' or a '?' to follow an 's' escape.")
+                    throw new JsonException("Expected either an '!' or a '?' to follow an 's' escape.")
                             .withSpan(span);
                 }
                 if (d == 'n') {

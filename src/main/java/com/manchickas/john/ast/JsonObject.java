@@ -51,23 +51,40 @@ public final class JsonObject extends JsonElement {
                 .withSpan(this.span);
     }
 
-    public boolean has(String name) {
-        return this.elements.containsKey(name);
+    public JsonObject with(String name, JsonElement value) {
+        var builder = ImmutableMap.<String, JsonElement>builder();
+        builder.put(name, value);
+        for (var entry : this.entries()) {
+            var key = entry.getKey();
+            if (!key.equals(name))
+                builder.put(entry);
+        }
+        return new JsonObject(this.span, builder.build());
     }
 
     @Override
-    public int length() {
-        return this.elements.size();
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof JsonObject other) {
+            var span = other.span();
+            if (span == null || this.span == null || this.span.equals(span))
+                return this.elements.equals(other.elements);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.elements.hashCode();
     }
 
     public Set<Map.Entry<String, JsonElement>> entries() {
         return this.elements.entrySet();
     }
 
-    public JsonObject with(String name, JsonElement value) {
-        return new JsonObject(this.span, ImmutableMap.<String, JsonElement>builder()
-                .put(name, value)
-                .putAll(this.elements)
-                .buildKeepingLast());
+    @Override
+    public int length() {
+        return this.elements.size();
     }
 }

@@ -2,10 +2,10 @@ package com.manchickas.john.template.object.type;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.JsonObject;
-import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.object.RecordTemplate;
 import com.manchickas.john.template.object.constructor.TetraConstructor;
+import com.manchickas.john.template.object.property.PropertyTemplate;
 
 import java.util.List;
 
@@ -33,12 +33,12 @@ public final class TetraRecordTemplate<A, B, C, D, Instance> extends RecordTempl
     public Result<Instance> parse(JsonElement element) {
         if (element instanceof JsonObject)
             return this.first.parseAndPromote(element).flatMap(first ->
-                this.second.parseAndPromote(element).flatMap(second ->
-                        this.third.parseAndPromote(element).flatMap(third ->
-                                this.fourth.parseAndPromote(element).flatMap(fourth -> {
-                                    var instance = this.constructor.construct(first, second, third, fourth);
-                                    return Result.success(instance);
-                                }))));
+                    this.second.parseAndPromote(element).flatMap(second ->
+                            this.third.parseAndPromote(element).flatMap(third ->
+                                    this.fourth.parseAndPromote(element).flatMap(fourth -> {
+                                        var instance = this.constructor.construct(first, second, third, fourth);
+                                        return Result.success(instance);
+                                    }))));
         return Result.mismatch();
     }
 

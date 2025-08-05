@@ -34,6 +34,10 @@ public class StringReader {
         return c >= '0' && c <= '9';
     }
 
+    public static boolean isAlphabetic(int c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+
     public static boolean isHexDigit(int c) {
         return StringReader.isDigit(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
     }
@@ -72,6 +76,12 @@ public class StringReader {
         }
         this.column += 1;
         return c;
+    }
+
+    public boolean skipWhitespace() {
+        while (this.canRead() && StringReader.isWhitespace(this.peek()))
+            this.read();
+        return this.canRead();
     }
 
     public boolean canRead() {
@@ -157,5 +167,6 @@ public class StringReader {
         return cached;
     }
 
-    public record Position(int cursor, int column, int line) {}
+    public record Position(int cursor, int column, int line) {
+    }
 }

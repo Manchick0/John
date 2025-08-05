@@ -16,13 +16,14 @@ public final class LiteralTemplate implements Template<String> {
     }
 
     private LiteralTemplate(String literal,
-                           boolean caseSensitive) {
+                            boolean caseSensitive) {
         this.literal = literal;
         this.caseSensitive = caseSensitive;
     }
 
     /**
      * Returns a <b>case-insensitive</b> version of the current {@link LiteralTemplate}.
+     *
      * @return a case-insensitive {@link LiteralTemplate}
      */
     public Template<String> caseInsensitive() {

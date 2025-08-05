@@ -1,7 +1,7 @@
 package com.manchickas.john.path.segment;
 
-import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.exception.JsonException;
 import org.jetbrains.annotations.NotNull;
 
 public record SubscriptOperator(PathSegment operand, int index) implements PathSegment {
@@ -13,12 +13,12 @@ public record SubscriptOperator(PathSegment operand, int index) implements PathS
     }
 
     @Override
-    public int depth() {
-        return this.operand.depth() + 1;
+    public @NotNull String toString() {
+        return this.operand.toString() + '[' + this.index + ']';
     }
 
     @Override
-    public @NotNull String toString() {
-        return this.operand.toString() + '[' + this.index + ']';
+    public int depth() {
+        return this.operand.depth() + 1;
     }
 }

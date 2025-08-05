@@ -56,9 +56,4 @@ public final class JsonString extends JsonPrimitive<String> {
     public String value() {
         return this.value;
     }
-
-    @Override
-    public String toString() {
-        return '"' + this.sanitize() + '"';
-    }
 }

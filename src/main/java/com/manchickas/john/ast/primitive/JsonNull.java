@@ -18,6 +18,16 @@ public final class JsonNull extends JsonPrimitive<Void> {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof JsonNull other) {
+            var span = other.span();
+            return span == null || this.span == null || this.span.equals(span);
+        }
+        return false;
+    }
+
+    @Override
     public Void value() {
         return null;
     }

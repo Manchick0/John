@@ -3,9 +3,9 @@ package com.manchickas.john.template.object;
 import com.google.common.collect.ImmutableMap;
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.JsonObject;
-import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import com.manchickas.john.template.object.property.PropertyTemplate;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.List;

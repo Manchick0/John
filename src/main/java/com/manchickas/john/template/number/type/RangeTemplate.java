@@ -2,8 +2,8 @@ package com.manchickas.john.template.number.type;
 
 import com.manchickas.john.ast.JsonElement;
 import com.manchickas.john.ast.primitive.JsonNumber;
-import com.manchickas.john.template.number.NumericTemplate;
 import com.manchickas.john.template.Result;
+import com.manchickas.john.template.number.NumericTemplate;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class RangeTemplate implements NumericTemplate {

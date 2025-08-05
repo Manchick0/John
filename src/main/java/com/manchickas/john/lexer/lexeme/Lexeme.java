@@ -21,7 +21,7 @@ public record Lexeme<T>(LexemeType<T> type, T value,
     public <V> V expect(LexemeType<V> type) throws JsonException {
         return type.parse(this.value)
                 .orElseThrow(() -> new JsonException("Expected a lexeme of type '%s'", type)
-                    .withSpan(this.span));
+                        .withSpan(this.span));
     }
 
     @CanIgnoreReturnValue

@@ -1,37 +1,36 @@
 package com.manchickas.john.template;
 
 import com.manchickas.john.ast.JsonElement;
-import com.manchickas.john.template.object.MapTemplate;
-import com.manchickas.john.template.object.constructor.*;
-import com.manchickas.john.template.object.type.*;
-import com.manchickas.john.template.union.UnionTemplate;
 import com.manchickas.john.ast.primitive.JsonBoolean;
 import com.manchickas.john.ast.primitive.JsonNumber;
 import com.manchickas.john.ast.primitive.JsonString;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.array.ArrayTemplate;
+import com.manchickas.john.template.number.NumericTemplate;
 import com.manchickas.john.template.number.type.MaxTemplate;
 import com.manchickas.john.template.number.type.MinTemplate;
-import com.manchickas.john.template.number.NumericTemplate;
 import com.manchickas.john.template.number.type.RangeTemplate;
 import com.manchickas.john.template.object.DiscriminatedUnionTemplate;
+import com.manchickas.john.template.object.MapTemplate;
+import com.manchickas.john.template.object.constructor.*;
 import com.manchickas.john.template.object.property.PropertyAccessor;
 import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.object.property.type.RequiredPropertyTemplate;
+import com.manchickas.john.template.object.type.*;
 import com.manchickas.john.template.string.LiteralTemplate;
 import com.manchickas.john.template.string.PatternTemplate;
+import com.manchickas.john.template.union.UnionTemplate;
+import com.manchickas.john.util.Mapper;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.regex.Pattern;
 
 /**
@@ -128,7 +127,6 @@ public interface Template<T> {
         }
     };
 
-
     /**
      * Represents a {@link Template} that only matches JSON booleans.
      *
@@ -160,9 +158,8 @@ public interface Template<T> {
      * The strategies are attempted fuzzily, but strictly in-order, short-circuiting on the first match.
      *
      * @param templates the strategies to attempt.
+     * @param <T>       the type of all strategies.
      * @return a {@link Template} representing a union of the provided strategies.
-     * @param <T> the type of all strategies.
-     *
      * @since 1.0.0
      */
     @SafeVarargs
@@ -219,6 +216,7 @@ public interface Template<T> {
 
     /**
      * Represents a {@link Template} that matches all strings that themselves match the provided regular expression.
+     *
      * @param regex the regular expression to match against.
      * @return a {@link Template} representing that {@link Pattern}
      * @since 1.0.0
@@ -230,6 +228,7 @@ public interface Template<T> {
 
     /**
      * Represents a {@link Template} that matches all strings that themselves match the provided precompiled {@link Pattern}.
+     *
      * @param pattern the {@link Pattern} to match against.
      * @return a {@link Template} representing that {@link Pattern}
      * @since 1.0.0
@@ -246,10 +245,10 @@ public interface Template<T> {
      * The {@code resolver} must return a template whose type is a subtype of the {@code instance} type parameter.
      *
      * @param discriminator the template of the discriminator.
-     * @param resolver the function that maps a discriminator value to the appropriate template.
+     * @param resolver      the function that maps a discriminator value to the appropriate template.
+     * @param <Instance>    the supertype of all possible templates.
+     * @param <Disc>        the type of the discriminator property.
      * @return a {@link Template} representing the discriminated union.
-     * @param <Instance> the supertype of all possible templates.
-     * @param <Disc> the type of the discriminator property.
      * @since 1.0.0
      */
     @Contract(value = "_, _ -> new", pure = true)
@@ -263,8 +262,8 @@ public interface Template<T> {
      * of the object satisfies the provided {@code template}.
      *
      * @param template the template of an entry.
+     * @param <T>      the type of the template.
      * @return a {@link Template} representing the map.
-     * @param <T> the type of the template.
      * @since 1.1.0
      */
     static <T> Template<Map<String, T>> map(Template<T> template) {
@@ -356,8 +355,8 @@ public interface Template<T> {
      * the {@link #name(IntSet)} or the {@link Object#hashCode()} method gets invoked, <b>memoizing</b> the returned template afterward.
      *
      * @param supplier the supplier of the underlying {@link Template}.
+     * @param <T>      the type of the template.
      * @return a {@link Template} that defers its initialization to the first usage.
-     * @param <T> the type of the template.
      * @since 1.0.0
      */
     @Contract(value = "_ -> new", pure = true)
@@ -397,14 +396,16 @@ public interface Template<T> {
         };
     }
 
+    @ApiStatus.Internal
     default Result<T> parseAndPromote(JsonElement element) {
         return this.parse(element).promoteMismatch(
                 "Expected a value that would satisfy the template of type '%s'"
-                    .formatted(this.name(new IntOpenHashSet())),
+                        .formatted(this.name(new IntOpenHashSet())),
                 element.span()
         );
     }
 
+    @ApiStatus.Internal
     default Result<JsonElement> serializeAndPromote(T value) {
         return this.serialize(value).promoteMismatch(
                 "Expected a value that would satisfy the template of type '%s'"
@@ -424,6 +425,7 @@ public interface Template<T> {
 
     /**
      * Attempts to serialize the provided {@code value} back into a {@link JsonElement}.
+     *
      * @param value the value to serialize.
      * @return a {@link Result} representing the state of the operation.
      * @since 1.0.0
@@ -457,15 +459,15 @@ public interface Template<T> {
      * using the current template, and serializes the property by first accessing it with the provided {@link PropertyAccessor}, and then delegating
      * to the current template.
      *
-     * @param name the name of the property.
-     * @param accessor a {@link PropertyAccessor} that specifies how to access the property from an instance.
-     * @return a {@link Template} representing the {@link PropertyTemplate}.
+     * @param name       the name of the property.
+     * @param accessor   a {@link PropertyAccessor} that specifies how to access the property from an instance.
      * @param <Instance> the type on which the property can be accessed.
+     * @return a {@link Template} representing the {@link PropertyTemplate}.
      * @since 1.0.0
      */
-    @SuppressWarnings("unchecked")
-    default <Instance, Self extends PropertyTemplate<Instance, T, Self>> Self property(String name, PropertyAccessor<Instance, T> accessor) {
-        return (Self) new RequiredPropertyTemplate<>(
+    default <Instance> RequiredPropertyTemplate<Instance, T> property(String name,
+                                                                      PropertyAccessor<Instance, T> accessor) {
+        return new RequiredPropertyTemplate<>(
                 name,
                 this,
                 accessor,
@@ -478,68 +480,54 @@ public interface Template<T> {
      * <br><br>
      * During serialization, the composed {@link Template} transforms the value back to the one requested by the underlying template
      * using the {@code remapper} function, and delegates the process back to it.
-     *
-     * @param mapper the function to use for forward transformation.
-     * @param remapper the function to use for backward transformation.
-     * @return a {@link Template} that transforms the current template's value.
-     * @param <V> the type of the composed template.
-     * @see #flatMap(Function, Function)
-     * @since 1.0.0
-     */
-    default <V> Template<V> map(Function<T, V> mapper,
-                                Function<V, T> remapper) {
-        return new Template<>() {
-
-            @Override
-            public Result<V> parse(JsonElement element) {
-                return Template.this.parse(element)
-                        .map(mapper);
-            }
-
-            @Override
-            public Result<JsonElement> serialize(V value) {
-                return Template.this.serialize(remapper.apply(value));
-            }
-
-            @Override
-            public String name(IntSet encountered) {
-                return Template.this.name(encountered);
-            }
-
-            @Override
-            public int hashCode() {
-                return Template.this.hashCode();
-            }
-        };
-    }
-
-    /**
-     * Composes a {@link Template} that, if the current template could yield a value, transforms it to a {@link Result} using the provided {@code mapper} function,
-     * which then represents the state of the operation.
      * <br><br>
-     * During serialization, the composed {@link Template} transforms the value back to the one requested by the underlying template
-     * using the {@code remapper} function, and delegates the process back to it.
+     * Any exceptions, even checked ones, thrown during both forward and backward transformation get wrapped as {@link com.manchickas.john.template.Result.Error Errors}s. Exceptions
+     * without a {@code detailMessage} get recognized as {@link com.manchickas.john.template.Result.Mismatch Mismatches}, resulting in a generic error message
+     * with the {@link #name(IntSet)} of the {@link Template} inferred.
+     * <br><br>
+     * <pre>{@code
+     *      Template<Integer> template = Template.STRING.map(str -> {
+     *          try {
+     *              return Integer.parseInt(str);
+     *          } catch (NumberFormatException e) {
+     *              // No detail message provided => Mismatch
+     *              throw new NumberFormatException();
+     *          }
+     *      }, Object::toString)
+     *      John.parse("\"ABC\"", template);
+     * }</pre>
+     * <pre>{@code
+     * "ABC"
+     * ^^^^^
+     * (1:1-5) Expected a value that would satisfy the template of type 'string'
+     * }</pre>
      *
-     * @param mapper the function to use for forward transformation.
+     * @param mapper   the function to use for forward transformation.
      * @param remapper the function to use for backward transformation.
+     * @param <V>      the type of the composed template.
      * @return a {@link Template} that transforms the current template's value.
-     * @param <V> the type of the composed template.
-     * @see #map(Function, Function)
      * @since 1.0.0
      */
-    default <V> Template<V> flatMap(Function<T, Result<V>> mapper, 
-                                    Function<V, T> remapper) {
+    default <V> Template<V> map(Mapper<T, V> mapper,
+                                Mapper<V, T> remapper) {
         return new Template<>() {
 
             @Override
+            @SuppressWarnings("unchecked")
             public Result<V> parse(JsonElement element) {
-                return Template.this.parse(element)
-                        .flatMap(mapper);
+                var result = Template.this.parse(element);
+                if (result.isSuccess())
+                    return mapper.mapAndWrap(result.unwrap(), element::span);
+                return (Result<V>) (result);
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public Result<JsonElement> serialize(V value) {
-                return Template.this.serialize(remapper.apply(value));
+                var result = remapper.mapAndWrap(value, () -> SourceSpan.lineWide(value.toString(), 1));
+                if (result.isSuccess())
+                    return Template.this.serialize(result.unwrap());
+                return (Result<JsonElement>) (result);
             }
 
             @Override
@@ -562,7 +550,7 @@ public interface Template<T> {
      * provided {@code message} supplier.
      *
      * @param predicate the predicate to validate the value against.
-     * @param message the supplier of the error message.
+     * @param message   the supplier of the error message.
      * @return a {@link Template} that yields the current template's value, if it satisfies the given predicate; otherwise, errors with the supplied error message.
      * @since 1.0.0
      */
@@ -600,6 +588,34 @@ public interface Template<T> {
             @Override
             public int hashCode() {
                 return Template.this.hashCode();
+            }
+        };
+    }
+
+    /**
+     * Composes a {@link Template} that describes itself differently, based on the provided {@code name} transformer,
+     * but functions identically to the current one during both parsing and serialization.
+     *
+     * @param name the transformer that takes in the {@link #name(IntSet)} of the current template and adjusts it.
+     * @return a {@link Template} that behaves identically to the current one, but describes itself differently.
+     * @since 2.1.0
+     */
+    default Template<T> describe(UnaryOperator<String> name) {
+        return new Template<>() {
+
+            @Override
+            public Result<T> parse(JsonElement element) {
+                return Template.this.parse(element);
+            }
+
+            @Override
+            public Result<JsonElement> serialize(@Nullable T value) {
+                return Template.this.serialize(value);
+            }
+
+            @Override
+            public String name(IntSet encountered) {
+                return name.apply(Template.this.name(encountered));
             }
         };
     }

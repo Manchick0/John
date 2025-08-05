@@ -6,7 +6,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class NullTemplate implements Template<Void> {
 
-    NullTemplate() {}
+    NullTemplate() {
+    }
 
     @Override
     public Result<Void> parse(JsonElement element) {
@@ -29,7 +30,11 @@ public final class NullTemplate implements Template<Void> {
      * @since 1.0.0
      */
     public <V> Template<V> mapToTyped() {
-        return this.map(__ -> null, __ -> null);
+        return this.map(__ -> null, v -> {
+            if (v == null)
+                return null;
+            throw new IllegalStateException();
+        });
     }
 
     @Override

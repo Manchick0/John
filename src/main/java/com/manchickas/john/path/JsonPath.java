@@ -1,9 +1,8 @@
 package com.manchickas.john.path;
 
-import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.path.segment.PathSegment;
-import com.manchickas.john.path.segment.SubscriptOperator;
 import com.manchickas.john.util.ArrayBuilder;
 
 import java.util.Arrays;
@@ -13,7 +12,7 @@ import java.util.Arrays;
  */
 public final class JsonPath {
 
-    private final PathSegment[] segments;
+    private static final JsonPath THIS = new JsonPath(new PathSegment[]{PathSegment.THIS});
     /**
      * Represents the literal number of segments this path consists of.
      */
@@ -23,6 +22,7 @@ public final class JsonPath {
      * need to perform to traverse the path.
      */
     public final int depth;
+    private final PathSegment[] segments;
 
     private JsonPath(PathSegment[] segments) {
         this.segments = segments;
@@ -78,37 +78,31 @@ public final class JsonPath {
     /**
      * Appends the provided {@link JsonPath} to the current one.
      *
-     * @param path the path to append.
+     * @param other the path to append.
      * @return the combined path.
      */
-    public JsonPath resolve(JsonPath path) {
-        return new JsonPath(ArrayBuilder.<PathSegment>builder()
+    public JsonPath resolve(JsonPath other) {
+        return new JsonPath(ArrayBuilder.<PathSegment>builderWithExpectedSize(this.length + other.length)
                 .appendAll(this.segments)
-                .appendAll(path.segments)
+                .appendAll(other.segments)
                 .build(PathSegment[]::new));
     }
 
     /**
-     * Normalizes the path by resolving redundant segments and combining subscript chains, resulting in a path
-     * with an equal {@link #depth}, but a potentially lower {@link #length}.
+     * Determines whether the first {@code n} segments of the {@link JsonPath} match the first {@code n}
+     * of the provided one.
      *
-     * @return the normalized path.
+     * @param other the {@link JsonPath} to check against.
+     * @return {@code true} if the first {@code n} segments match, {@code false} otherwise.
      */
-    public JsonPath normalize() {
-        var builder = ArrayBuilder.<PathSegment>builder();
-        for (var segment : this.segments) {
-            if (segment == PathSegment.THIS)
-                continue;
-            if (segment instanceof SubscriptOperator(PathSegment operand, int index)) {
-                if (operand == PathSegment.THIS) {
-                    var last = builder.trimLastOr(PathSegment.THIS);
-                    builder.append(new SubscriptOperator(last, index));
-                    continue;
-                }
-            }
-            builder.append(segment);
+    public boolean startsWith(JsonPath other) {
+        if (other.length > this.length)
+            return false;
+        for (var i = 0; i < other.length; i++) {
+            if (!this.segments[i].equals(other.segments[i]))
+                return false;
         }
-        return new JsonPath(builder.build(PathSegment[]::new));
+        return true;
     }
 
     /**

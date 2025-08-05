@@ -1,10 +1,10 @@
 package com.manchickas.john.template.object.property.type;
 
 import com.manchickas.john.position.SourceSpan;
-import com.manchickas.john.template.object.property.PropertyAccessor;
-import com.manchickas.john.template.object.property.PropertyTemplate;
 import com.manchickas.john.template.Result;
 import com.manchickas.john.template.Template;
+import com.manchickas.john.template.object.property.PropertyAccessor;
+import com.manchickas.john.template.object.property.PropertyTemplate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

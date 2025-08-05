@@ -43,8 +43,12 @@ public final class ArrayBuilder<T> {
 
     @CanIgnoreReturnValue
     public ArrayBuilder<T> appendAll(final T[] entries) {
-        for (var entry : entries)
-            this.append(entry);
+        return this.appendAll(entries, 0);
+    }
+
+    public ArrayBuilder<T> appendAll(final T[] entries, int offset) {
+        for (var i = offset; i < entries.length; i++)
+            this.append(entries[i]);
         return this;
     }
 

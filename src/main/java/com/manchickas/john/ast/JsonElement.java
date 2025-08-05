@@ -5,6 +5,7 @@ import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.path.JsonPath;
 import com.manchickas.john.position.SourceSpan;
 import com.manchickas.john.template.Template;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,10 +24,6 @@ public abstract class JsonElement {
     @Nullable
     protected final SourceSpan span;
 
-    protected JsonElement() {
-        this(null);
-    }
-
     protected JsonElement(@Nullable SourceSpan span) {
         this.span = span;
     }
@@ -38,7 +35,6 @@ public abstract class JsonElement {
      * @return the parsed from the current element value.
      * @throws JsonException if the element doesn't satisfy the provided {@link Template}.
      */
-    @NotNull
     public <T> T expect(Template<T> template) throws JsonException {
         var result = template.parseAndPromote(this);
         if (result.isSuccess())
@@ -74,12 +70,13 @@ public abstract class JsonElement {
     /**
      * Attempts to parse the element at the provided path according to the provided {@link JsonElement}.
      *
-     * @param path the path to traverse.
+     * @param path     the path to traverse.
      * @param template the {@link Template} the element at the provided path must satisfy.
      * @return the parsed from the {@link JsonElement} value.
      * @throws JsonException if the JSON structure doesn't match the one expected by the path, or the retrieved {@link JsonElement} doesn't satisfy the provided {@link Template}.
+     * @apiNote The whole family of {@code get} methods <b>never</b> returns {@code null} as a result of unsuccessful retrieval. The only case in which a {@code null} may be returned,
+     * and the only reason the <b>template-overloaded</b> methods aren't annotated with {@link NotNull @NotNull} is when a {@link Template#NULL} is explicitly requested.
      */
-    @NotNull
     public <T> T get(String path, Template<T> template) throws JsonException {
         return this.get(JsonPath.compile(path), template);
     }
@@ -87,12 +84,13 @@ public abstract class JsonElement {
     /**
      * Attempts to parse the element at the provided precompiled {@link JsonPath} according to the provided {@link JsonElement}.
      *
-     * @param path the path to traverse.
+     * @param path     the path to traverse.
      * @param template the {@link Template} the element at the provided path must satisfy.
      * @return the parsed from the {@link JsonElement} value.
      * @throws JsonException if the JSON structure doesn't match the one expected by the path, or the retrieved {@link JsonElement} doesn't satisfy the provided {@link Template}.
+     * @apiNote The whole family of {@code get} methods <b>never</b> returns {@code null} as a result of unsuccessful retrieval. The only case in which a {@code null} may be returned,
+     * and the only reason the <b>template-overloaded</b> methods aren't annotated with {@link NotNull @NotNull} is when a {@link Template#NULL} is explicitly requested.
      */
-    @NotNull
     public <T> T get(JsonPath path, Template<T> template) throws JsonException {
         return this.get(path).expect(template);
     }
@@ -103,9 +101,13 @@ public abstract class JsonElement {
      * @param name the property to retrieve.
      * @return the value of the provided property.
      * @throws JsonException if the current {@link JsonElement} doesn't represent an object,
-     *      or the property is missing on the object.
+     *                       or the property is missing on the object.
+     * @apiNote While the {@code property} method may be used publicly, it's intended for
+     * internal usage by {@link JsonPath}s. The family of {@link #get(String) get} methods
+     * should be preferred instead.
      */
     @NotNull
+    @ApiStatus.Internal
     public JsonElement property(String name) throws JsonException {
         throw new JsonException("Expected an object.")
                 .withSpan(this.span);
@@ -117,9 +119,13 @@ public abstract class JsonElement {
      * @param index the index to retrieve.
      * @return the value at the provided index.
      * @throws JsonException if the current {@link JsonElement} doesn't represent an object,
-     *      a negative index was provided, or the array contains too few elements.
+     *                       a negative index was provided, or the array contains too few elements.
+     * @apiNote While the {@code subscript} method may be used publicly, it's intended for
+     * internal usage by {@link JsonPath}s. The family of {@link #get(String) get} methods
+     * should be preferred instead.
      */
     @NotNull
+    @ApiStatus.Internal
     public JsonElement subscript(int index) throws JsonException {
         throw new JsonException("Expected an array.")
                 .withSpan(this.span);
@@ -142,20 +148,83 @@ public abstract class JsonElement {
     /**
      * Returns the {@code length} of the element.
      * <br><br>
-     * The {@code length} is an abstract concept that depends on the specific implementation. {@link com.manchickas.john.ast.primitive.JsonPrimitive JsonPrimitives}s
-     * always have a length of {@code 1}, {@link JsonArray}s return their actual length, and {@link JsonObject}s — their underlying size.
+     * The <i>length</i> of the {@link JsonElement} is an abstract concept, defined by its specific implementation.
+     *
+     * <table>
+     *     <tr>
+     *         <th>Subclass</th>
+     *         <th>Length</th>
+     *     </tr>
+     *     <tr>
+     *         <td>{@link JsonObject}</td>
+     *         <td>The number of entries in the object.</td>
+     *     </tr>
+     *     <tr>
+     *         <td>{@link JsonArray}</td>
+     *         <td>The number of elements in the array.</td>
+     *     </tr>
+     *     <tr>
+     *         <td>{@link com.manchickas.john.ast.primitive.JsonPrimitive JsonPrimitive}</td>
+     *         <td>Always {@code 1}, regardless of the input.</td>
+     *     </tr>
+     * </table>
      *
      * @return the length of the element.
      */
     public abstract int length();
 
-    @Nullable
-    public SourceSpan span() {
-        return this.span;
-    }
+    /**
+     * Determines whether the provided {@code obj} equals the current {@link JsonElement}
+     * semantically.
+     * <br><br>
+     * The {@link JsonElement} is considered equal to the provided {@code obj} under the following conditions:
+     * <ul>
+     *     <li><b>IF</b> The provided {@code obj} has the identity of the {@link JsonElement}, <b>THEN</b> the two objects are considered equal.</li>
+     *     <li><b>OR</b> Both objects represent {@link JsonElement}s of the <b>same subtype</b>, <b>THEN</b>:
+     *          <ul>
+     *              <li><b>IF</b> One of the elements doesn't have a {@link SourceSpan} attached to it, <b>OR</b>
+     *              the two {@link SourceSpan}s are semantically equal, <b>THEN</b>:
+     *                  <ul>
+     *                      <li>
+     *                          <b>IF</b> The underlying values of the two objects are semantically equal, <B>THEN</B> the two objects are considered equal.
+     *                      </li>
+     *                  </ul>
+     *              </li>
+     *          </ul>
+     *     </li>
+     * </ul>
+     *
+     * @param obj the {@link Object} to compare against.
+     * @return {@code true} if the {@link JsonElement} is semantically equal to the provided {@code obj}, {@code false} otherwise.
+     */
+    @Override
+    public abstract boolean equals(Object obj);
 
+    /**
+     * Computes the hash code of the {@link JsonElement}.
+     * <br><br>
+     * The hash code of the {@link JsonElement} is identical to the hash code of its underlying value,
+     * regardless of the attached {@link SourceSpan}. {@link com.manchickas.john.ast.primitive.JsonNull JSON nulls} always
+     * yield a hash code value of {@code 0}.
+     *
+     * @return the hash code of the {@link JsonElement}.
+     */
+    @Override
+    public abstract int hashCode();
+
+    /**
+     * Stringifies the {@link JsonElement} into a <b>minified</b> JSON string.
+     *
+     * @return the stringified representation of the {@link JsonElement}.
+     */
     @Override
     public String toString() {
-        return John.stringify(this);
+        return John.stringify(this, 0);
+    }
+
+    @Nullable
+    @ApiStatus.Internal
+    public SourceSpan span() {
+        return this.span;
     }
 }

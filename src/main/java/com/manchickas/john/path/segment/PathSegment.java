@@ -1,7 +1,7 @@
 package com.manchickas.john.path.segment;
 
-import com.manchickas.john.exception.JsonException;
 import com.manchickas.john.ast.JsonElement;
+import com.manchickas.john.exception.JsonException;
 import org.jetbrains.annotations.NotNull;
 
 public interface PathSegment {
@@ -27,8 +27,8 @@ public interface PathSegment {
     @NotNull
     JsonElement resolve(JsonElement root) throws JsonException;
 
-    int depth();
-
     @Override
     String toString();
+
+    int depth();
 }

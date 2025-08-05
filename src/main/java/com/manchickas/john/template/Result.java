@@ -38,17 +38,21 @@ public sealed interface Result<T> permits Result.Error, Result.Mismatch, Result.
     default boolean isSuccess() {
         return false;
     }
+
     default boolean isMismatch() {
         return false;
     }
+
     default boolean isError() {
         return false;
     }
 
     T unwrap();
+
     T unwrapOr(T other);
 
     String message();
+
     SourceSpan span();
 
     @SuppressWarnings("unchecked")
@@ -142,11 +146,6 @@ public sealed interface Result<T> permits Result.Error, Result.Mismatch, Result.
         @Override
         public T unwrapOr(T other) {
             return other;
-        }
-
-        @Override
-        public String message() {
-            return this.message;
         }
 
         @Override
