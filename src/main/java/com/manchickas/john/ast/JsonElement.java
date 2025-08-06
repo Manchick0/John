@@ -69,13 +69,15 @@ public abstract class JsonElement {
 
     /**
      * Attempts to parse the element at the provided path according to the provided {@link JsonElement}.
+     * <br><br>
+     * <b>Note,</b> the whole family of {@code get} methods <b>never</b> returns {@code null} as a result of unsuccessful retrieval. The only case in which a {@code null} may be returned,
+     * and the only reason the <b>template-overloaded</b> methods aren't annotated with {@link NotNull @NotNull} is when a {@link Template#NULL} is explicitly requested.
      *
      * @param path     the path to traverse.
      * @param template the {@link Template} the element at the provided path must satisfy.
      * @return the parsed from the {@link JsonElement} value.
      * @throws JsonException if the JSON structure doesn't match the one expected by the path, or the retrieved {@link JsonElement} doesn't satisfy the provided {@link Template}.
-     * @apiNote The whole family of {@code get} methods <b>never</b> returns {@code null} as a result of unsuccessful retrieval. The only case in which a {@code null} may be returned,
-     * and the only reason the <b>template-overloaded</b> methods aren't annotated with {@link NotNull @NotNull} is when a {@link Template#NULL} is explicitly requested.
+     *
      */
     public <T> T get(String path, Template<T> template) throws JsonException {
         return this.get(JsonPath.compile(path), template);
@@ -83,13 +85,14 @@ public abstract class JsonElement {
 
     /**
      * Attempts to parse the element at the provided precompiled {@link JsonPath} according to the provided {@link JsonElement}.
+     * <br><br>
+     * <b>Note,</b> the whole family of {@code get} methods <b>never</b> returns {@code null} as a result of unsuccessful retrieval. The only case in which a {@code null} may be returned,
+     * and the only reason the <b>template-overloaded</b> methods aren't annotated with {@link NotNull @NotNull} is when a {@link Template#NULL} is explicitly requested.
      *
      * @param path     the path to traverse.
      * @param template the {@link Template} the element at the provided path must satisfy.
      * @return the parsed from the {@link JsonElement} value.
      * @throws JsonException if the JSON structure doesn't match the one expected by the path, or the retrieved {@link JsonElement} doesn't satisfy the provided {@link Template}.
-     * @apiNote The whole family of {@code get} methods <b>never</b> returns {@code null} as a result of unsuccessful retrieval. The only case in which a {@code null} may be returned,
-     * and the only reason the <b>template-overloaded</b> methods aren't annotated with {@link NotNull @NotNull} is when a {@link Template#NULL} is explicitly requested.
      */
     public <T> T get(JsonPath path, Template<T> template) throws JsonException {
         return this.get(path).expect(template);
@@ -97,14 +100,15 @@ public abstract class JsonElement {
 
     /**
      * Attempts to retrieve the provided property from the {@link JsonElement}.
+     * <br><br>
+     * <b>Note,</b> while the {@code property} method may be used publicly, it's intended for
+     *  internal usage by {@link JsonPath}s. The family of {@link #get(String) get} methods
+     *  should be preferred instead.
      *
      * @param name the property to retrieve.
      * @return the value of the provided property.
      * @throws JsonException if the current {@link JsonElement} doesn't represent an object,
      *                       or the property is missing on the object.
-     * @apiNote While the {@code property} method may be used publicly, it's intended for
-     * internal usage by {@link JsonPath}s. The family of {@link #get(String) get} methods
-     * should be preferred instead.
      */
     @NotNull
     @ApiStatus.Internal
@@ -115,14 +119,16 @@ public abstract class JsonElement {
 
     /**
      * Attempts to retrieve the provided index from the {@link JsonElement}.
+     * <br><br>
+     *
+     * <b>Note,</b> while the {@code subscript} method may be used publicly, it's intended for
+     * internal usage by {@link JsonPath}s. The family of {@link #get(String) get} methods
+     * should be preferred instead.
      *
      * @param index the index to retrieve.
      * @return the value at the provided index.
      * @throws JsonException if the current {@link JsonElement} doesn't represent an object,
      *                       a negative index was provided, or the array contains too few elements.
-     * @apiNote While the {@code subscript} method may be used publicly, it's intended for
-     * internal usage by {@link JsonPath}s. The family of {@link #get(String) get} methods
-     * should be preferred instead.
      */
     @NotNull
     @ApiStatus.Internal
@@ -149,8 +155,9 @@ public abstract class JsonElement {
      * Returns the {@code length} of the element.
      * <br><br>
      * The <i>length</i> of the {@link JsonElement} is an abstract concept, defined by its specific implementation.
-     *
+     * <br>
      * <table>
+     *     <caption>Method Implementations</caption>
      *     <tr>
      *         <th>Subclass</th>
      *         <th>Length</th>
